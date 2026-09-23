@@ -81,40 +81,29 @@
       <div class="auth-card">
         <div class="kicker">HartvaleLegal</div>
         <h1 id="auth-title">Content studio</h1>
-        <p class="auth-copy" id="auth-copy">Set a local admin password to manage the homepage on this browser.</p>
+        <p class="auth-copy" id="auth-copy">Sign in with the admin account created for this site in Supabase.</p>
         <form id="password-form">
-          <div class="field"><label for="password" id="password-label">Create admin password</label><input id="password" type="password" minlength="12" autocomplete="new-password" required></div>
-          <small class="password-rules">Use 12+ characters with uppercase, lowercase, a number, and a symbol.</small>
-          <div class="field" id="confirm-wrap"><label for="confirm-password">Confirm password</label><input id="confirm-password" type="password" minlength="12" autocomplete="new-password"></div>
-          <button class="btn" id="auth-submit" type="submit">Create local access</button>
+          <div class="field"><label for="admin-email">Email</label><input id="admin-email" type="email" autocomplete="username" required></div>
+          <div class="field"><label for="password" id="password-label">Password</label><input id="password" type="password" autocomplete="current-password" required></div>
+          <button class="btn" id="auth-submit" type="submit">Sign in</button>
           <p class="auth-status" id="auth-status" role="status" aria-live="polite"></p>
+          <p class="muted" id="setup-note" style="margin-top:16px;font-size:13px;"></p>
         </form>
       </div>
     </section>
 
     <section class="app" id="app">
-      <header class="app-header"><div class="app-header-inner"><div class="admin-brand"><div class="admin-mark">H</div><div><strong>HartvaleLegal</strong><span>Content studio</span></div></div><div class="header-actions"><button class="btn btn--gold" id="save" type="button">Save changes</button><button class="btn btn--quiet" id="preview" type="button">Preview homepage</button><button class="btn btn--quiet" id="export" type="button">Export JSON</button><button class="btn btn--quiet" id="download-file" type="button">Download GitHub file</button><label class="btn btn--quiet" for="import-file">Import JSON</label><input id="import-file" type="file" accept="application/json" hidden><button class="btn btn--quiet" id="change-password" type="button">Change password</button><button class="btn btn--quiet" id="lock" type="button">Lock</button></div></div></header>
+      <header class="app-header"><div class="app-header-inner"><div class="admin-brand"><div class="admin-mark">H</div><div><strong>HartvaleLegal</strong><span>Content studio</span></div></div><div class="header-actions"><button class="btn btn--gold" id="save" type="button">Save changes</button><button class="btn btn--quiet" id="preview" type="button">Preview homepage</button><button class="btn btn--quiet" id="export" type="button">Export JSON backup</button><label class="btn btn--quiet" for="import-file">Import JSON</label><input id="import-file" type="file" accept="application/json" hidden><button class="btn btn--quiet" id="lock" type="button">Sign out</button></div></div></header>
       <main class="workspace">
-        <div class="workspace-intro"><div><div class="kicker">Homepage control</div><h1>Edit the public site</h1><p>Every field below writes to the same content model used by the homepage. Keep links relative where possible, for example <code>#contact</code> or <code>/privacy/</code>.</p><p class="save-status" id="save-status" role="status" aria-live="polite"></p></div><div class="mode-note"><strong>GitHub-only mode</strong><br>Changes are saved in this browser. Export the JSON and commit it as your content backup when you want to publish the same edits for every visitor.</div></div>
+        <div class="workspace-intro"><div><div class="kicker">Homepage control</div><h1>Edit the public site</h1><p>Every field below writes to the same content model used by the homepage. Keep links relative where possible, for example <code>#contact</code> or <code>/privacy/</code>.</p><p class="save-status" id="save-status" role="status" aria-live="polite"></p></div><div class="mode-note"><strong>Live mode</strong><br>Changes save straight to the database and go live for every visitor immediately. Use "Export JSON backup" occasionally so you always have an offline copy.</div></div>
         <div id="editor"></div>
-        <p class="footer-note">This static admin never sends content or passwords to a third-party service. The public enquiry form can send submissions to Formspree after you add your endpoint URL. Do not use this local admin gate as the sole security layer for sensitive client data.</p>
+        <p class="footer-note">Content is stored in your Supabase project and is only editable by a signed-in admin account (managed from your Supabase dashboard, not from this page). The public enquiry form can send submissions to Formspree after you add your endpoint URL.</p>
       </main>
     </section>
   </div>
-  <dialog id="password-dialog" aria-labelledby="password-dialog-title">
-    <form class="dialog-card" id="change-password-form">
-      <div class="kicker">Security</div>
-      <h2 id="password-dialog-title">Change admin password</h2>
-      <p class="muted">This changes the password stored in this browser only.</p>
-      <div class="field"><label for="current-password">Current password</label><input id="current-password" type="password" autocomplete="current-password" required></div>
-      <div class="field"><label for="new-password">New password</label><input id="new-password" type="password" minlength="12" autocomplete="new-password" required></div>
-      <small class="password-rules">Use 12+ characters with uppercase, lowercase, a number, and a symbol.</small>
-      <div class="field"><label for="confirm-new-password">Confirm new password</label><input id="confirm-new-password" type="password" minlength="12" autocomplete="new-password" required></div>
-      <p class="auth-status" id="change-password-status" role="status" aria-live="polite"></p>
-      <div class="dialog-actions"><button class="btn btn--quiet" id="cancel-password" type="button">Cancel</button><button class="btn" type="submit">Update password</button></div>
-    </form>
-  </dialog>
   <script src="../assets/js/site-content.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="../assets/js/supabase-config.js"></script>
   <script src="../assets/js/admin.js"></script>
 </body>
 </html>
