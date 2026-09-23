@@ -14,8 +14,8 @@
     brand: { name: "HartvaleLegal", descriptor: "Solicitors", mark: "H" },
     header: {
       strapline: "Clear, considered legal advice in London, Oxford and Edinburgh",
-      phoneDisplay: "020 7946 0180",
-      phoneHref: "tel:+442079460180",
+      phoneDisplay: "TODO: phone number",
+      phoneHref: "tel:TODO",
       nav: { work: "Our work", workUrl: "#practice", clients: "Clients", clientsUrl: "#clients", people: "Our people", peopleUrl: "#people", cta: "Start a conversation", ctaUrl: "#contact" }
     },
     hero: {
@@ -58,25 +58,25 @@
       intro: "Every matter is led by a partner, so you always know who is responsible for your advice.",
       lead: {
         name: "Oliver Smith", role: "Senior partner", bio: "Oliver leads the firm’s private client and property work. He advises families, founders and institutions on matters where legal judgement, discretion and a practical view of the future matter.",
-        focus: "Private clients and property", based: "London and Oxford", email: "oliver.smith@hartvalelegal.co.uk", imageUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=900&q=85", imageAlt: "Portrait of Oliver Smith, senior partner", buttonLabel: "Contact Oliver", quote: "Understand the issue fully. Give advice that can be acted on.", quoteAttribution: "Oliver Smith, senior partner"
+        focus: "Private clients and property", based: "London and Oxford", email: "TODO@replace-with-real-email.example", imageUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=900&q=85", imageAlt: "Portrait of Oliver Smith, senior partner", buttonLabel: "Contact Oliver", quote: "Understand the issue fully. Give advice that can be acted on.", quoteAttribution: "Oliver Smith, senior partner"
       },
       partners: [
-        { name: "Priya Hart", focus: "Business and disputes", email: "priya.hart@hartvalelegal.co.uk", imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=85", imageAlt: "Portrait of Priya Hart" },
-        { name: "Marcus Bell", focus: "Property and the built world", email: "marcus.bell@hartvalelegal.co.uk", imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&q=85", imageAlt: "Portrait of Marcus Bell" },
-        { name: "Eleanor Shaw", focus: "Private wealth and family", email: "eleanor.shaw@hartvalelegal.co.uk", imageUrl: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=160&q=85", imageAlt: "Portrait of Eleanor Shaw" }
+        { name: "Priya Hart", focus: "Business and disputes", email: "TODO@replace-with-real-email.example", imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=85", imageAlt: "Portrait of Priya Hart" },
+        { name: "Marcus Bell", focus: "Property and the built world", email: "TODO@replace-with-real-email.example", imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&q=85", imageAlt: "Portrait of Marcus Bell" },
+        { name: "Eleanor Shaw", focus: "Private wealth and family", email: "TODO@replace-with-real-email.example", imageUrl: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=160&q=85", imageAlt: "Portrait of Eleanor Shaw" }
       ]
     },
     contact: {
       title: "Find the right way forward.",
       lede: "Tell us briefly what you are dealing with. We will review your enquiry and come back to you with a sensible next step.",
-      london: "1 Farringdon Street\nLondon EC4A 4BL",
-      email: "hello@hartvalelegal.co.uk",
-      emailHref: "mailto:hello@hartvalelegal.co.uk",
-      phone: "+44 (0)20 7946 0180",
-      phoneHref: "tel:+442079460180",
-      otherOffices: "Oxford and Edinburgh\nBy appointment",
-      availability: "Monday to Friday\n08:30 to 18:00, UK time",
-      formSubject: "New HartvaleLegal enquiry",
+      london: "TODO: street address\nTODO: city, postcode",
+      email: "TODO@replace-with-real-email.example",
+      emailHref: "mailto:TODO@replace-with-real-email.example",
+      phone: "TODO: phone number",
+      phoneHref: "tel:TODO",
+      otherOffices: "TODO: other office locations, or delete this row",
+      availability: "TODO: opening hours",
+      formSubject: "New enquiry",
       formAction: "https://formspree.io/f/YOUR_FORM_ID",
       successMessage: "Thank you. Your enquiry has been sent. We will be in touch shortly.",
       errorMessage: "We could not send your enquiry right now. Please try again or email us directly.",
@@ -84,8 +84,8 @@
       privacyUrl: "#"
     },
     footer: {
-      legal: "HartvaleLegal LLP is a limited liability partnership registered in England and Wales (number OC000000) and is authorised and regulated by the Solicitors Regulation Authority (SRA number 000000). Scottish legal services are provided through our Edinburgh office and regulated by the Law Society of Scotland. Registered office: 1 Farringdon Street, London EC4A 4BL.",
-      copyright: "HartvaleLegal LLP. Concept website: the firm, names and portraits are illustrative.",
+      legal: "TODO: replace with your real legal notice \u2014 registered name, company/LLP number, SRA (or other regulator) number, and registered office address. Do not publish this site with placeholder numbers.",
+      copyright: "TODO: replace with real firm name, or delete this line if the notice above already covers it.",
       privacyUrl: "#",
       complaintsUrl: "#",
       accessibilityUrl: "#"
