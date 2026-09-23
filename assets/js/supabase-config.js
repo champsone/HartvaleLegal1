@@ -8,8 +8,8 @@
    (see /supabase/setup.sql). Do not put a "service_role" key here. */
 (function () {
   "use strict";
-  window.SUPABASE_URL = "TODO_REPLACE_WITH_YOUR_SUPABASE_PROJECT_URL";
-  window.SUPABASE_ANON_KEY = "TODO_REPLACE_WITH_YOUR_SUPABASE_ANON_KEY";
+  window.SUPABASE_URL = "https://kvurvxtibfmnffsepugr.supabase.co";
+  window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2dXJ2eHRpYmZtbmZmc2VwdWdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxOTY1MDksImV4cCI6MjEwNTc3MjUwOX0.PvujMJfreVEmDAyZIbcQtOXaDJ-Eh-JYrE7EzL1UrT4";
 
   window.getSupabaseClient = function () {
     if (!window.supabase || typeof window.supabase.createClient !== "function") return null;
