@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17262e">
+  <title>Ashford Vale | Admin</title>
+  <style>
+    :root { --navy:#17262e; --navy-2:#223943; --paper:#f5f3ee; --white:#fff; --ink:#17262e; --muted:#667176; --line:#d8d8d1; --gold:#d4c19c; --wine:#642d3d; --green:#276957; --danger:#a94747; --shadow:0 18px 45px rgba(23,38,46,.12); }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    button, input, textarea { font:inherit; }
+    button { cursor:pointer; }
+    .shell { min-height:100vh; }
+    .auth { display:grid; place-items:center; min-height:100vh; padding:24px; background:radial-gradient(circle at 80% 10%,#3a5960,transparent 42%),var(--navy); }
+    .auth-card { width:min(470px,100%); padding:38px; background:var(--white); border-top:4px solid var(--gold); box-shadow:var(--shadow); }
+    .kicker { color:var(--gold); font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+    .auth .kicker { color:var(--wine); }
+    h1,h2,h3 { margin:0; font-family:Georgia,"Times New Roman",serif; font-weight:400; line-height:1.1; }
+    h1 { margin:10px 0 12px; font-size:42px; letter-spacing:-.04em; }
+    h2 { font-size:30px; letter-spacing:-.03em; }
+    h3 { font-size:20px; }
+    .muted { color:var(--muted); }
+    .auth-copy { margin:0 0 26px; color:var(--muted); }
+    .field { display:grid; gap:6px; margin:0 0 16px; }
+    label { font-size:13px; font-weight:700; }
+    input, textarea { width:100%; padding:11px 12px; border:1px solid #bfc5c5; border-radius:3px; background:#fff; color:var(--ink); }
+    input:focus, textarea:focus { outline:3px solid rgba(212,193,156,.5); border-color:var(--wine); }
+    textarea { min-height:104px; resize:vertical; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 18px; border:1px solid var(--navy); border-radius:3px; background:var(--navy); color:#fff; font-weight:750; }
+    .btn:hover { background:var(--wine); border-color:var(--wine); }
+    .btn--quiet { background:transparent; color:var(--navy); border-color:#a9b2b3; }
+    .app-header .btn--quiet { color:#fff; border-color:#6d7d82; }
+    .btn--danger { color:var(--danger); border-color:#d7a7a7; background:transparent; }
+    .btn--gold { background:var(--gold); border-color:var(--gold); color:var(--navy); }
+    .auth-status, .save-status { min-height:24px; margin:12px 0 0; color:var(--danger); font-size:13px; }
+    .app { display:none; }
+    .app.is-visible { display:block; }
+    .app-header { position:sticky; top:0; z-index:5; background:rgba(23,38,46,.96); color:#fff; box-shadow:0 5px 20px rgba(0,0,0,.12); }
+    .app-header-inner { display:flex; align-items:center; justify-content:space-between; gap:18px; width:min(1260px,100% - 36px); min-height:74px; margin:auto; }
+    .admin-brand { display:flex; align-items:center; gap:12px; }
+    .admin-mark { display:grid; place-items:center; width:36px; height:36px; border:1px solid var(--gold); border-radius:50%; color:var(--gold); font:20px Georgia,serif; }
+    .admin-brand strong { display:block; font:20px Georgia,serif; }
+    .admin-brand span { display:block; color:#b9c4c5; font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+    .header-actions { display:flex; flex-wrap:wrap; gap:8px; }
+    .header-actions .btn { min-height:38px; padding:0 13px; font-size:13px; }
+    .workspace { width:min(1260px,100% - 36px); margin:0 auto; padding:34px 0 64px; }
+    .workspace-intro { display:flex; justify-content:space-between; gap:26px; align-items:end; margin-bottom:24px; }
+    .workspace-intro p { max-width:650px; margin:10px 0 0; color:var(--muted); }
+    .mode-note { max-width:315px; padding:12px 14px; border-left:3px solid var(--gold); background:#fff9ed; color:#5f5542; font-size:13px; }
+    .editor-section { margin:18px 0; padding:24px; background:var(--white); border:1px solid var(--line); box-shadow:0 8px 26px rgba(23,38,46,.045); }
+    .section-head { display:flex; justify-content:space-between; gap:18px; align-items:start; padding-bottom:16px; border-bottom:1px solid var(--line); }
+    .section-head p { max-width:650px; margin:6px 0 0; color:var(--muted); font-size:13px; }
+    .field-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 18px; padding-top:18px; }
+    .field-grid .full { grid-column:1/-1; }
+    .field small { color:var(--muted); font-size:12px; }
+    .field input[data-kind="url"] { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:13px; }
+    .repeat-grid { display:grid; gap:14px; margin-top:18px; }
+    .repeat-card { padding:18px; background:#fbfaf7; border:1px solid var(--line); }
+    .repeat-card h3 { margin-bottom:14px; font-size:22px; }
+    .repeat-card .field-grid { padding-top:0; }
+    .url-key { border-top:3px solid var(--gold); }
+    .url-key .section-head { border:0; padding-bottom:0; }
+    .url-row { display:grid; grid-template-columns:190px minmax(0,1fr); gap:16px; align-items:center; padding:14px 0; border-bottom:1px solid var(--line); }
+    .url-row:last-child { border-bottom:0; }
+    .url-row strong { display:block; font-size:13px; }
+    .url-row span { display:block; color:var(--muted); font-size:12px; }
+    .footer-note { margin-top:22px; color:var(--muted); font-size:12px; }
+    @media (max-width:760px) { .app-header-inner,.workspace-intro { align-items:flex-start; } .app-header-inner,.workspace-intro { flex-direction:column; } .header-actions { width:100%; } .workspace { width:min(100% - 24px,1260px); padding-top:24px; } .field-grid { grid-template-columns:1fr; } .field-grid .full { grid-column:auto; } .editor-section { padding:18px; } .url-row { grid-template-columns:1fr; gap:7px; } .auth-card { padding:28px 22px; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="auth" id="auth" aria-labelledby="auth-title">
+      <div class="auth-card">
+        <div class="kicker">Ashford Vale</div>
+        <h1 id="auth-title">Content studio</h1>
+        <p class="auth-copy" id="auth-copy">Set a local admin password to manage the homepage on this browser.</p>
+        <form id="password-form">
+          <div class="field"><label for="password" id="password-label">Create admin password</label><input id="password" type="password" minlength="8" autocomplete="new-password" required></div>
+          <div class="field" id="confirm-wrap"><label for="confirm-password">Confirm password</label><input id="confirm-password" type="password" minlength="8" autocomplete="new-password"></div>
+          <button class="btn" id="auth-submit" type="submit">Create local access</button>
+          <p class="auth-status" id="auth-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <section class="app" id="app">
+      <header class="app-header"><div class="app-header-inner"><div class="admin-brand"><div class="admin-mark">A</div><div><strong>Ashford Vale</strong><span>Content studio</span></div></div><div class="header-actions"><button class="btn btn--gold" id="save" type="button">Save changes</button><button class="btn btn--quiet" id="preview" type="button">Preview homepage</button><button class="btn btn--quiet" id="export" type="button">Export JSON</button><button class="btn btn--quiet" id="download-file" type="button">Download GitHub file</button><label class="btn btn--quiet" for="import-file">Import JSON</label><input id="import-file" type="file" accept="application/json" hidden><button class="btn btn--quiet" id="lock" type="button">Lock</button></div></div></header>
+      <main class="workspace">
+        <div class="workspace-intro"><div><div class="kicker">Homepage control</div><h1>Edit the public site</h1><p>Every field below writes to the same content model used by the homepage. Keep links relative where possible, for example <code>#contact</code> or <code>/privacy/</code>.</p><p class="save-status" id="save-status" role="status" aria-live="polite"></p></div><div class="mode-note"><strong>GitHub-only mode</strong><br>Changes are saved in this browser. Export the JSON and commit it as your content backup when you want to publish the same edits for every visitor.</div></div>
+        <div id="editor"></div>
+        <p class="footer-note">This static admin never sends content or passwords to a third-party service. The public enquiry form can send submissions to Formspree after you add your endpoint URL. Do not use this local admin gate as the sole security layer for sensitive client data.</p>
+      </main>
+    </section>
+  </div>
+  <script src="../assets/js/site-content.js"></script>
+  <script src="../assets/js/admin.js"></script>
+</body>
+</html>
