@@ -2,7 +2,6 @@
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "hartvalelegal-site-content-v1";
   var defaults = window.DEFAULT_SITE_CONTENT;
 
   function clone(value) { return JSON.parse(JSON.stringify(value)); }
@@ -12,15 +11,19 @@
     Object.keys(override || {}).forEach(function (key) { base[key] = key in base ? merge(base[key], override[key]) : override[key]; });
     return base;
   }
-  function load() {
+  // Ask Supabase for the live content. Returns null (rather than throwing)
+  // if Supabase isn't configured yet, or the request fails for any reason --
+  // callers should keep showing the repository defaults in that case.
+  async function fetchLiveContent() {
+    var client = typeof window.getSupabaseClient === "function" ? window.getSupabaseClient() : null;
+    if (!client) return null;
     try {
-      var stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        var parsed = JSON.parse(stored);
-        if (parsed && parsed.version === defaults.version) return merge(clone(defaults), parsed);
-      }
-    } catch (error) { /* Use the repository defaults when storage is unavailable. */ }
-    return clone(defaults);
+      var result = await client.from("site_content").select("data").eq("id", 1).single();
+      if (result.error || !result.data || !result.data.data) return null;
+      var live = result.data.data;
+      if (!live || typeof live !== "object" || Object.keys(live).length === 0) return null;
+      return merge(clone(defaults), live);
+    } catch (error) { return null; }
   }
   function text(selector, value) {
     var el = document.querySelector(selector);
@@ -83,8 +86,7 @@
     });
   }
 
-  function applyContent() {
-  var content = load();
+  function applyContent(content) {
   document.title = content.meta.title;
   var descriptionMeta = document.querySelector('meta[name="description"]');
   var ogTitleMeta = document.querySelector('meta[property="og:title"]');
@@ -195,9 +197,16 @@
   if (legalLinks[2]) legalLinks[2].href = safeUrl(content.footer.accessibilityUrl);
 
   window.__HARTVALE_CONTENT__ = content;
-  window.CMS_STORAGE_KEY = STORAGE_KEY;
   window.dispatchEvent(new CustomEvent("hartvalelegal:content-ready"));
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyContent);
-  else applyContent();
+
+  async function init() {
+    // Paint the repository defaults straight away so the page is never blank
+    // and works even if Supabase is unreachable (or not configured yet).
+    applyContent(clone(defaults));
+    var live = await fetchLiveContent();
+    if (live) applyContent(live);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
 })();
