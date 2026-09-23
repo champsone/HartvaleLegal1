@@ -1,10 +1,10 @@
-/* Ashford Vale | Static admin studio
+/* HartvaleLegal | Static admin studio
    No server, API token, analytics, or third-party admin service required. */
 (function () {
   "use strict";
 
-  var CONTENT_KEY = "ashford-vale-site-content-v1";
-  var AUTH_KEY = "ashford-vale-admin-password-v1";
+  var CONTENT_KEY = "hartvalelegal-site-content-v1";
+  var AUTH_KEY = "hartvalelegal-admin-password-v1";
   var defaults = window.DEFAULT_SITE_CONTENT;
   var state;
   var editor = document.getElementById("editor");
@@ -133,44 +133,105 @@
     var link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = name; link.click();
     setTimeout(function () { URL.revokeObjectURL(link.href); }, 500);
   }
-  function exportJson() { download("ashford-vale-content.json", JSON.stringify(state, null, 2), "application/json"); }
-  function exportGithubFile() { download("site-content.js", "/* Exported from Ashford Vale Content Studio */\n(function () {\n  window.DEFAULT_SITE_CONTENT = " + JSON.stringify(state, null, 2) + ";\n})();\n", "text/javascript"); }
+  function exportJson() { download("hartvalelegal-content.json", JSON.stringify(state, null, 2), "application/json"); }
+  function exportGithubFile() { download("site-content.js", "/* Exported from HartvaleLegal Content Studio */\n(function () {\n  window.DEFAULT_SITE_CONTENT = " + JSON.stringify(state, null, 2) + ";\n})();\n", "text/javascript"); }
   function setAuthView(login) {
     document.getElementById("auth-title").textContent = login ? "Admin sign in" : "Content studio";
-    document.getElementById("auth-copy").textContent = login ? "Enter the password created for this browser." : "Set a local admin password to manage the homepage on this browser.";
+    document.getElementById("auth-copy").textContent = login ? "Enter the password created for this browser." : "Create a strong local admin password to manage the homepage on this browser.";
     document.getElementById("password-label").textContent = login ? "Admin password" : "Create admin password";
     document.getElementById("confirm-wrap").style.display = login ? "none" : "grid";
     document.getElementById("auth-submit").textContent = login ? "Sign in" : "Create local access";
   }
   function showApp() { document.getElementById("auth").style.display = "none"; document.getElementById("app").classList.add("is-visible"); render(); }
   function showAuth() { document.getElementById("app").classList.remove("is-visible"); document.getElementById("auth").style.display = "grid"; setAuthView(Boolean(storageGet(AUTH_KEY))); document.getElementById("password-form").reset(); }
-  async function hash(value) {
-    if (window.crypto && window.crypto.subtle) {
-      var bytes = new TextEncoder().encode(value), digest = await crypto.subtle.digest("SHA-256", bytes);
-      return Array.from(new Uint8Array(digest)).map(function (byte) { return byte.toString(16).padStart(2, "0"); }).join("");
-    }
-    var result = 2166136261; for (var i = 0; i < value.length; i++) result = Math.imul(result ^ value.charCodeAt(i), 16777619); return "fallback-" + (result >>> 0).toString(16);
+  var PBKDF2_ITERATIONS = 210000;
+  function passwordError(value) {
+    if (value.length < 12) return "Use at least 12 characters.";
+    if (!/[A-Z]/.test(value)) return "Add at least one uppercase letter.";
+    if (!/[a-z]/.test(value)) return "Add at least one lowercase letter.";
+    if (!/[0-9]/.test(value)) return "Add at least one number.";
+    if (!/[^A-Za-z0-9]/.test(value)) return "Add at least one symbol.";
+    return "";
+  }
+  function base64(bytes) { var binary = ""; bytes.forEach(function (byte) { binary += String.fromCharCode(byte); }); return btoa(binary); }
+  function bytesFromBase64(value) { var binary = atob(value), bytes = new Uint8Array(binary.length); for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i); return bytes; }
+  async function legacyHash(value) {
+    if (!window.crypto || !window.crypto.subtle) throw new Error("Secure browser cryptography is required.");
+    var bytes = new TextEncoder().encode(value), digest = await window.crypto.subtle.digest("SHA-256", bytes);
+    return Array.from(new Uint8Array(digest)).map(function (byte) { return byte.toString(16).padStart(2, "0"); }).join("");
+  }
+  async function derivePassword(value, salt, iterations) {
+    if (!window.crypto || !window.crypto.subtle) throw new Error("Secure browser cryptography is required.");
+    var key = await window.crypto.subtle.importKey("raw", new TextEncoder().encode(value), { name: "PBKDF2" }, false, ["deriveBits"]);
+    var bits = await window.crypto.subtle.deriveBits({ name: "PBKDF2", salt: salt, iterations: iterations, hash: "SHA-256" }, key, 256);
+    return base64(new Uint8Array(bits));
+  }
+  async function makeCredential(value) {
+    if (!window.crypto || !window.crypto.getRandomValues) throw new Error("Open the admin through GitHub Pages HTTPS to enable secure password storage.");
+    var salt = new Uint8Array(16); window.crypto.getRandomValues(salt);
+    return JSON.stringify({ version: 2, algorithm: "PBKDF2-SHA-256", iterations: PBKDF2_ITERATIONS, salt: base64(salt), hash: await derivePassword(value, salt, PBKDF2_ITERATIONS) });
+  }
+  async function verifyPassword(value, stored) {
+    try {
+      var record = JSON.parse(stored);
+      if (record && record.version === 2) return (await derivePassword(value, bytesFromBase64(record.salt), record.iterations)) === record.hash;
+    } catch (error) { /* Legacy SHA-256 records are upgraded after a successful login. */ }
+    return (await legacyHash(value)) === stored;
+  }
+  function isLegacyCredential(stored) { try { return JSON.parse(stored).version !== 2; } catch (error) { return true; } }
+  function showPasswordDialog() {
+    var dialog = document.getElementById("password-dialog");
+    document.getElementById("change-password-form").reset();
+    document.getElementById("change-password-status").textContent = "";
+    if (dialog.showModal) dialog.showModal();
   }
 
   document.getElementById("password-form").addEventListener("submit", async function (event) {
     event.preventDefault();
     var password = document.getElementById("password").value, confirm = document.getElementById("confirm-password").value, existing = storageGet(AUTH_KEY), status = document.getElementById("auth-status");
     status.textContent = "";
-    if (password.length < 8) { status.textContent = "Use at least 8 characters."; return; }
+    if (!existing) {
+      var setupError = passwordError(password);
+      if (setupError) { status.textContent = setupError; return; }
+    }
     if (!existing && password !== confirm) { status.textContent = "The passwords do not match."; return; }
-    var digest = await hash(password);
-    if (!existing) { if (!storageSet(AUTH_KEY, digest)) { status.textContent = "This browser cannot save local access."; return; } showApp(); return; }
-    if (digest !== existing) { status.textContent = "That password is not correct."; return; }
+    try {
+      if (!existing) {
+        var credential = await makeCredential(password);
+        if (!storageSet(AUTH_KEY, credential)) { status.textContent = "This browser cannot save local access."; return; }
+        showApp();
+        return;
+      }
+      if (!(await verifyPassword(password, existing))) { status.textContent = "That password is not correct."; return; }
+      if (isLegacyCredential(existing)) storageSet(AUTH_KEY, await makeCredential(password));
+    } catch (error) { status.textContent = error.message || "Secure password storage is unavailable in this browser."; return; }
     showApp();
   });
   document.getElementById("save").addEventListener("click", save);
   document.getElementById("preview").addEventListener("click", function () { window.open(new URL("../", window.location.href).href, "_blank", "noopener"); });
   document.getElementById("export").addEventListener("click", exportJson);
   document.getElementById("download-file").addEventListener("click", exportGithubFile);
+  document.getElementById("change-password").addEventListener("click", showPasswordDialog);
+  document.getElementById("cancel-password").addEventListener("click", function () { document.getElementById("password-dialog").close(); });
+  document.getElementById("change-password-form").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    var status = document.getElementById("change-password-status"), current = document.getElementById("current-password").value, next = document.getElementById("new-password").value, confirm = document.getElementById("confirm-new-password").value, stored = storageGet(AUTH_KEY);
+    status.textContent = "";
+    try {
+      if (!stored || !(await verifyPassword(current, stored))) { status.textContent = "The current password is not correct."; return; }
+      var policyError = passwordError(next);
+      if (policyError) { status.textContent = policyError; return; }
+      if (next !== confirm) { status.textContent = "The new passwords do not match."; return; }
+      if (!storageSet(AUTH_KEY, await makeCredential(next))) { status.textContent = "This browser cannot save the new password."; return; }
+      document.getElementById("password-dialog").close();
+      saveStatus.textContent = "Admin password updated in this browser.";
+      saveStatus.style.color = "var(--green)";
+    } catch (error) { status.textContent = error.message || "Secure password storage is unavailable in this browser."; }
+  });
   document.getElementById("lock").addEventListener("click", showAuth);
   document.getElementById("import-file").addEventListener("change", function (event) {
     var file = event.target.files[0]; if (!file) return;
-    var reader = new FileReader(); reader.onload = function () { try { var imported = JSON.parse(reader.result); if (imported.version !== defaults.version) throw new Error("version"); state = imported; render(); saveStatus.textContent = "Imported. Review the fields, then save changes."; saveStatus.style.color = "var(--green)"; } catch (error) { saveStatus.textContent = "That file is not a compatible Ashford Vale content export."; saveStatus.style.color = "var(--danger)"; } };
+    var reader = new FileReader(); reader.onload = function () { try { var imported = JSON.parse(reader.result); if (imported.version !== defaults.version) throw new Error("version"); state = merge(clone(defaults), imported); render(); saveStatus.textContent = "Imported. Review the fields, then save changes."; saveStatus.style.color = "var(--green)"; } catch (error) { saveStatus.textContent = "That file is not a compatible HartvaleLegal content export."; saveStatus.style.color = "var(--danger)"; } };
     reader.readAsText(file); event.target.value = "";
   });
 

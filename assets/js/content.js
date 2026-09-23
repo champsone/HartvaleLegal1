@@ -1,8 +1,8 @@
-/* Ashford Vale | Homepage content renderer */
+/* HartvaleLegal | Homepage content renderer */
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "ashford-vale-site-content-v1";
+  var STORAGE_KEY = "hartvalelegal-site-content-v1";
   var defaults = window.DEFAULT_SITE_CONTENT;
 
   function clone(value) { return JSON.parse(JSON.stringify(value)); }
@@ -194,9 +194,9 @@
   if (legalLinks[1]) legalLinks[1].href = safeUrl(content.footer.complaintsUrl);
   if (legalLinks[2]) legalLinks[2].href = safeUrl(content.footer.accessibilityUrl);
 
-  window.__ASHFORD_CONTENT__ = content;
+  window.__HARTVALE_CONTENT__ = content;
   window.CMS_STORAGE_KEY = STORAGE_KEY;
-  window.dispatchEvent(new CustomEvent("ashford:content-ready"));
+  window.dispatchEvent(new CustomEvent("hartvalelegal:content-ready"));
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyContent);
   else applyContent();

@@ -1,4 +1,4 @@
-/* Ashford Vale | Site behaviour
+/* HartvaleLegal | Site behaviour
    1. Mobile navigation (used in narrow desktop windows)
    2. Header shadow and reveal on scroll
    3. Footer year
@@ -107,7 +107,7 @@
 
     var endpoint = form.getAttribute("action");
     var submit = form.querySelector('button[type="submit"]');
-    var contactContent = window.__ASHFORD_CONTENT__ && window.__ASHFORD_CONTENT__.contact || {};
+    var contactContent = window.__HARTVALE_CONTENT__ && window.__HARTVALE_CONTENT__.contact || {};
     var successMessage = contactContent.successMessage || "Thank you. Your enquiry has been sent.";
     var errorMessage = contactContent.errorMessage || "We could not send your enquiry. Please try again or email us directly.";
 
