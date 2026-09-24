@@ -22,6 +22,17 @@
 <body id="top">
   <a class="skip" href="#main">Skip to main content</a>
 
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+    <filter id="duotone" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0"/>
+      <feComponentTransfer>
+        <feFuncR type="table" tableValues="0.063 0.831"/>
+        <feFuncG type="table" tableValues="0.102 0.757"/>
+        <feFuncB type="table" tableValues="0.125 0.612"/>
+      </feComponentTransfer>
+    </filter>
+  </svg>
+
   <div class="topline">
     <div class="wrap">
       <span class="tl-left">Clear, considered legal advice in London, Oxford and Edinburgh</span>
@@ -129,7 +140,7 @@
         </figure>
 
         <div class="quotes-grid reveal">
-          <figure>
+          <figure class="quote--feature">
             <blockquote><p>Clear about the risks from the first meeting and realistic about the costs. That made a difficult dispute far easier to manage.</p></blockquote>
             <figcaption><strong>Founder, technology company</strong>Shareholder dispute</figcaption>
           </figure>
