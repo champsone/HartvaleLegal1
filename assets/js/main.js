@@ -1,6 +1,6 @@
 /* HartvaleLegal | Site behaviour
    1. Mobile navigation (used in narrow desktop windows)
-   2. Header shadow and reveal on scroll
+   2. Header shadow, scroll-spy nav highlighting and reveal on scroll
    3. Footer year
    4. Enquiry form (validation and submission) */
 
@@ -56,6 +56,21 @@
     reveals.forEach(function (el) { io.observe(el); });
   } else {
     reveals.forEach(function (el) { el.classList.add("in"); });
+  }
+
+  /* Highlight the current section's nav link while scrolling */
+  var navLinks = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+  var sections = navLinks
+    .map(function (link) { return document.getElementById(link.getAttribute("href").slice(1)); })
+    .filter(Boolean);
+  if ("IntersectionObserver" in window && sections.length) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var link = nav.querySelector('a[href="#' + entry.target.id + '"]');
+        if (link) link.classList.toggle("active", entry.isIntersecting);
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    sections.forEach(function (s) { spy.observe(s); });
   }
 
   /* 2. Footer year */
