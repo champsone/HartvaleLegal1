@@ -1,4 +1,4 @@
-# Northmere Legal website
+# HartvaleLegal website
 
 A static site (still hosted for free on GitHub Pages), with live content
 stored in a small managed database (Supabase). Editing the homepage through
@@ -8,7 +8,7 @@ step. Open the site root in a browser to preview it.
 ## Structure
 
 ```
-northmerelegal/
+hartvalelegal/
 ├── index.html                 Public homepage structure
 ├── admin/index.html           Content studio at `/admin/`
 ├── supabase/setup.sql         Run once in Supabase to create the database table
@@ -80,8 +80,3 @@ Supabase *service_role* key here.
 - Colours and fonts live in the `:root` block at the top of `styles.css`.
 - Layout changes at 960px (tablet and mobile) and 600px (small phones).
 - The hero photograph is designed to bleed to the right edge of the screen on desktop.
-
-
-## Northmere Legal visual refresh
-
-This version applies a premium forest-green, warm-ivory and champagne-gold visual theme. Before public launch, verify all legal-service claims, attorney profiles, contact details, testimonials, and regulatory statements. Keep the existing `CNAME` until the replacement domain is registered and DNS is configured.
