@@ -84,4 +84,4 @@ Supabase *service_role* key here.
 
 ## NorthmereLegal brand and launch notes
 
-The site has been rebranded to NorthmereLegal with a refined forest-green, warm ivory and brass visual system. The existing `CNAME` file is intentionally retained as `hartvalelegal.com`; replace it with the verified NorthmereLegal domain only after that domain has been acquired and DNS is configured. Review all office locations, regulatory statements, contact details, team biographies, testimonials, and practice-area descriptions for accuracy before launch.
+The site has been rebranded to NorthmereLegal with a refined forest-green, warm ivory and brass visual system. The `CNAME` file is set to `northmerelegal.com`; confirm the domain is acquired and DNS is configured before launch. Review all office locations, regulatory statements, contact details, team biographies, testimonials, and practice-area descriptions for accuracy before launch.
