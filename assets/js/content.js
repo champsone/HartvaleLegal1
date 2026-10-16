@@ -196,7 +196,7 @@
   if (legalLinks[1]) legalLinks[1].href = safeUrl(content.footer.complaintsUrl);
   if (legalLinks[2]) legalLinks[2].href = safeUrl(content.footer.accessibilityUrl);
 
-  window.__NORTHMERE_CONTENT__ = content;
+  window.__HARTVALE_CONTENT__ = content;
   window.dispatchEvent(new CustomEvent("northmerelegal:content-ready"));
   }
 

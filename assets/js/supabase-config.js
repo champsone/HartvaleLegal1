@@ -1,4 +1,4 @@
-/* Northmere Legal | Supabase connection settings
+/* HartvaleLegal | Supabase connection settings
    Fill these in from your Supabase project (Project settings -> API):
    - SUPABASE_URL is your project URL, e.g. https://abcdefgh.supabase.co
    - SUPABASE_ANON_KEY is the "anon public" key.
@@ -14,9 +14,9 @@
   window.getSupabaseClient = function () {
     if (!window.supabase || typeof window.supabase.createClient !== "function") return null;
     if (window.SUPABASE_URL.indexOf("TODO_") === 0 || window.SUPABASE_ANON_KEY.indexOf("TODO_") === 0) return null;
-    if (!window.__northmereSupabaseClient__) {
-      window.__northmereSupabaseClient__ = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+    if (!window.__hartvaleSupabaseClient__) {
+      window.__hartvaleSupabaseClient__ = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
     }
-    return window.__northmereSupabaseClient__;
+    return window.__hartvaleSupabaseClient__;
   };
 })();
