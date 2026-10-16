@@ -1,4 +1,4 @@
-/* HartvaleLegal | Site behaviour
+/* NorthmereLegal | Site behaviour
    1. Mobile navigation (used in narrow desktop windows)
    2. Header shadow, scroll-spy nav highlighting and reveal on scroll
    3. Footer year
