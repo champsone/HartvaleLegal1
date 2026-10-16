@@ -6,6 +6,7 @@
 
   var defaults = window.DEFAULT_SITE_CONTENT;
   var state;
+  var staleLoaded = false;
   var editor = document.getElementById("editor");
   var saveStatus = document.getElementById("save-status");
   var client = typeof window.getSupabaseClient === "function" ? window.getSupabaseClient() : null;
@@ -24,6 +25,7 @@
       if (result.error || !result.data || !result.data.data) return clone(defaults);
       var live = result.data.data;
       if (!live || typeof live !== "object" || Object.keys(live).length === 0) return clone(defaults);
+      if ((Number(live.revision) || 0) < (Number(defaults.revision) || 0)) { staleLoaded = true; return window.normalizeBrand(clone(defaults)); }
       return window.normalizeBrand(merge(clone(defaults), window.cleanLegacyBrand(live)));
     } catch (error) { return clone(defaults); }
   }
@@ -49,7 +51,7 @@
     trust: { title: "", detail: "" },
     practice: { icon: "person", title: "New practice area", description: "", items: [""], linkLabel: "Discuss a matter", linkUrl: "#contact" },
     quote: { quote: "", attribution: "", detail: "" },
-    partner: { name: "New partner", focus: "", email: "", imageUrl: "", imageAlt: "" },
+    partner: { name: "New partner", role: "Partner", focus: "", based: "", bio: "", email: "", imageUrl: "", imageAlt: "" },
     insight: { category: "General", title: "New insight", description: "", linkLabel: "Talk to our team →", linkUrl: "#contact" },
     step: { title: "", text: "" },
     link: { label: "", url: "#" },
@@ -79,11 +81,11 @@
   function render() {
     var trustCards = state.trust.map(function (item, i) { return listCard("trust", i, state.trust.length, "Trust item " + (i + 1), [field("Title", "trust." + i + ".title"), field("Detail", "trust." + i + ".detail")]); });
     var practiceCards = state.practice.map(function (item, i) {
-      var fields = [field("Practice title", "practice." + i + ".title"), selectField("Icon", "practice." + i + ".icon", [["person", "Person and family"], ["building", "Building and property"], ["scales", "Scales and disputes"]]), field("Description", "practice." + i + ".description", "textarea", "Short paragraph shown on the homepage.", true), stringList("List item", "practice." + i + ".items"), field("Button label", "practice." + i + ".linkLabel")];
+      var fields = [field("Practice title", "practice." + i + ".title"), selectField("Icon", "practice." + i + ".icon", [["person", "Person and family"], ["building", "Building and property"], ["scales", "Scales and disputes"], ["shield", "Shield and protection"], ["plain", "Document"], ["partner", "People"], ["lock", "Confidential"]]), field("Description", "practice." + i + ".description", "textarea", "Short paragraph shown on the homepage.", true), stringList("List item", "practice." + i + ".items"), field("Button label", "practice." + i + ".linkLabel")];
       return listCard("practice", i, state.practice.length, "Practice area " + (i + 1), fields);
     });
     var quoteCards = state.clients.quotes.map(function (item, i) { return listCard("clients.quotes", i, state.clients.quotes.length, "Quote " + (i + 1), [field("Quote", "clients.quotes." + i + ".quote", "textarea", "Use an approved client comment only.", true), field("Attribution", "clients.quotes." + i + ".attribution"), field("Matter detail", "clients.quotes." + i + ".detail")]); });
-    var partnerCards = state.people.partners.map(function (item, i) { return listCard("people.partners", i, state.people.partners.length, "Partner " + (i + 1), [field("Name", "people.partners." + i + ".name"), field("Focus", "people.partners." + i + ".focus"), field("Portrait alt text", "people.partners." + i + ".imageAlt")]); });
+    var partnerCards = state.people.partners.map(function (item, i) { return listCard("people.partners", i, state.people.partners.length, "Partner " + (i + 1), [field("Name", "people.partners." + i + ".name"), field("Role", "people.partners." + i + ".role"), field("Focus", "people.partners." + i + ".focus"), field("Based in", "people.partners." + i + ".based"), field("Short biography", "people.partners." + i + ".bio", "textarea", "Two sentences is ideal.", true), field("Portrait alt text", "people.partners." + i + ".imageAlt")]); });
     var stepCards = state.contact.steps.map(function (item, i) { return listCard("contact.steps", i, state.contact.steps.length, "Step " + (i + 1), [field("Title", "contact.steps." + i + ".title"), field("Text", "contact.steps." + i + ".text", "textarea")]); });
     var footerLinks = state.footer.links.map(function (item, i) { return listCard("footer.links", i, state.footer.links.length, "Footer link " + (i + 1), [field("Label", "footer.links." + i + ".label"), field("URL", "footer.links." + i + ".url", "url")]); });
     var legalLinks = state.footer.legalLinks.map(function (item, i) { return listCard("footer.legalLinks", i, state.footer.legalLinks.length, "Legal link " + (i + 1), [field("Label", "footer.legalLinks." + i + ".label"), field("URL", "footer.legalLinks." + i + ".url", "url", "Relative path or full URL.")]); });
@@ -121,12 +123,12 @@
         field("Clients navigation label", "header.nav.clients"), field("People navigation label", "header.nav.people"), field("Header button label", "header.nav.cta")
       ])) +
       section("Hero", "The first screen visitors see. Button destinations and the image URL are in the URL key below.", grid([
-        field("Eyebrow", "hero.eyebrow"), field("Headline", "hero.title", "textarea", "Keep this concise for the visual layout.", true), field("Intro text", "hero.lede", "textarea", "The paragraph below the headline.", true),
+        field("Eyebrow", "hero.eyebrow"), field("Headline", "hero.title", "textarea", "First line of the headline.", true), field("Headline accent", "hero.titleAccent", "text", "Second line, shown in gold italics. Optional.", true), field("Intro text", "hero.lede", "textarea", "The paragraph below the headline.", true),
         field("Primary button label", "hero.primaryLabel"), field("Secondary button label", "hero.secondaryLabel"),
         field("Image alt text", "hero.imageAlt", "textarea", "Describe the image for accessibility.", true), field("Image caption", "hero.caption")
       ])) +
       section("Trust strip", "Credibility statements shown below the hero. Add, remove and reorder as needed.", repeatGrid(trustCards) + addButton("trust", "trust", "Add trust item")) +
-      section("Practice areas", "Section heading, then each practice card with its own list and button.", grid([field("Section title", "practiceSection.title"), field("Section intro", "practiceSection.intro", "textarea", "", true)]) + repeatGrid(practiceCards) + addButton("practice", "practice", "Add practice area")) +
+      section("Practice areas", "Section heading, then each practice card with its own list and button.", grid([field("Section label", "practiceSection.eyebrow"), field("Section title", "practiceSection.title"), field("Section intro", "practiceSection.intro", "textarea", "", true)]) + repeatGrid(practiceCards) + addButton("practice", "practice", "Add practice area")) +
       section("Client proof", "Introduction and approved testimonial copy.", grid([
         field("Section title", "clients.title"), field("Section intro", "clients.intro", "textarea", "", true),
         field("Lead quote", "clients.leadQuote", "textarea", "Use approved wording only.", true), field("Lead attribution", "clients.leadAttribution"), field("Lead matter detail", "clients.leadDetail"), field("Disclosure note", "clients.finePrint", "textarea", "Keep any required legal disclosure.", true)
@@ -155,7 +157,7 @@
         field("Reassurance heading", "contact.assuranceTitle"), field("Reassurance text", "contact.assuranceText", "textarea", "", true),
         field("Address label", "contact.labels.address"), field("London address", "contact.london", "textarea"),
         field("Direct label", "contact.labels.direct"), field("Email", "contact.email", "email"), field("Phone", "contact.phone"),
-        field("Offices label", "contact.labels.offices"), field("Other offices", "contact.otherOffices", "textarea"),
+        field("Telephone label", "contact.labels.offices"), field("Other offices", "contact.otherOffices", "textarea"),
         field("Availability label", "contact.labels.hours"), field("Availability", "contact.availability", "textarea"),
         field("Form heading", "contact.formLabel"), field("Form email subject", "contact.formSubject"), field("Send button label", "contact.submitLabel"),
         field("Dropdown placeholder", "contact.matterPlaceholder"), stringList("Dropdown option", "contact.matterOptions"),
@@ -192,6 +194,7 @@
     saveStatus.textContent = "Saving\u2026"; saveStatus.style.color = "var(--muted)";
     try {
       window.normalizeBrand(state);
+      state.revision = defaults.revision;
       var result = await client.from("site_content").upsert({ id: 1, data: state, updated_at: new Date().toISOString() }).select("id");
       if (result.error) throw result.error;
       if (!result.data || !result.data.length) throw new Error("no row was written - check you are signed in and that supabase/setup.sql has been run");
@@ -213,6 +216,7 @@
     document.getElementById("app").classList.add("is-visible");
     state = await loadContent();
     render();
+    if (staleLoaded) { saveStatus.textContent = "The saved content is from an older version, so the refreshed copy is loaded here. Review it, then press Save changes to publish."; saveStatus.style.color = "var(--muted)"; }
   }
   function showAuth(message) {
     document.getElementById("app").classList.remove("is-visible");
@@ -259,7 +263,7 @@
   });
   document.getElementById("import-file").addEventListener("change", function (event) {
     var file = event.target.files[0]; if (!file) return;
-    var reader = new FileReader(); reader.onload = function () { try { var imported = JSON.parse(reader.result); if (imported.version !== defaults.version) throw new Error("version"); state = merge(clone(defaults), imported); render(); saveStatus.textContent = "Imported. Review the fields, then save changes to publish."; saveStatus.style.color = "var(--green)"; } catch (error) { saveStatus.textContent = "That file is not a compatible NorthmereLegal content export."; saveStatus.style.color = "var(--danger)"; } };
+    var reader = new FileReader(); reader.onload = function () { try { var imported = JSON.parse(reader.result); if (imported.version !== defaults.version) throw new Error("version"); state = window.normalizeBrand(merge(clone(defaults), window.cleanLegacyBrand(imported))); state.revision = defaults.revision; render(); saveStatus.textContent = "Imported. Review the fields, then save changes to publish."; saveStatus.style.color = "var(--green)"; } catch (error) { saveStatus.textContent = "That file is not a compatible NorthmereLegal content export."; saveStatus.style.color = "var(--danger)"; } };
     reader.readAsText(file); event.target.value = "";
   });
 

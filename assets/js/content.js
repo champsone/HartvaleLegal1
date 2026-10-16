@@ -1,46 +1,309 @@
-/* NorthmereLegal — live homepage renderer. Defaults render immediately; Supabase content replaces them when available. */
+/* NorthmereLegal | Homepage renderer.
+   Built-in defaults render immediately. Live content from Supabase replaces them when it
+   is available and current (see "revision" in site-content.js). Every dynamic string is
+   written with textContent, never innerHTML, so content can never inject markup. */
 (function () {
-  'use strict';
+  "use strict";
+
   var defaults = window.DEFAULT_SITE_CONTENT;
+
+  /* ---------- helpers ---------- */
   function clone(v) { return JSON.parse(JSON.stringify(v)); }
   function merge(base, over) {
     if (Array.isArray(base)) return Array.isArray(over) ? over : base;
-    if (!base || typeof base !== 'object') return over == null ? base : over;
+    if (!base || typeof base !== "object") return over == null ? base : over;
     Object.keys(over || {}).forEach(function (k) { base[k] = k in base ? merge(base[k], over[k]) : over[k]; });
     return base;
   }
   function safeUrl(value, fallback) {
-    var u = String(value || '').trim();
-    if (u === '#practice') u = '#services';
-    if (u === '#main') u = '#top';
-    if (/^(javascript|data|vbscript):/i.test(u)) return fallback || '#';
-    return /^(https?:|mailto:|tel:|#|\/|\.\/|\.\.\/)/i.test(u) ? u : (fallback || '#');
+    var u = String(value || "").trim();
+    if (u === "#practice") u = "#services";
+    if (u === "#main") u = "#top";
+    if (/^(javascript|data|vbscript):/i.test(u)) return fallback || "#";
+    return /^(https?:|mailto:|tel:|#|\/|\.\/|\.\.\/)/i.test(u) ? u : (fallback || "#");
   }
-  function set(el, value) { if (el) el.textContent = value == null ? '' : String(value); }
-  function setHref(el, value, fallback) { if (el) el.setAttribute('href', safeUrl(value, fallback)); }
-  function make(tag, cls, value) { var e = document.createElement(tag); if (cls) e.className = cls; if (value != null) e.textContent = value; return e; }
-  function addField(parent, tag, cls, value) { var e = make(tag, cls, value); parent.appendChild(e); return e; }
+  function $(sel, root) { return (root || document).querySelector(sel); }
+  function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function set(el, value) { if (el) el.textContent = value == null ? "" : String(value); }
+  function setHref(el, value, fallback) { if (el) el.setAttribute("href", safeUrl(value, fallback)); }
+  function make(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function add(parent, tag, cls, text) { var e = make(tag, cls, text); parent.appendChild(e); return e; }
+  function show(el, on) { if (el) el.hidden = !on; }
+
+  /* ---------- icons (constant, trusted SVG markup) ---------- */
+  var ICONS = {
+    person: '<path d="M16 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/><path d="M5 27c0-6 5-9 11-9s11 3 11 9"/>',
+    building: '<path d="M6 27V9l10-5 10 5v18"/><path d="M3 27h26"/><path d="M12 27v-7h8v7"/><path d="M12 12h2M18 12h2M12 16h2M18 16h2"/>',
+    scales: '<path d="M16 4v23M9 27h14"/><path d="M5 9h22"/><path d="M5 9l-4 9a4 4 0 0 0 8 0L5 9Z"/><path d="M27 9l-4 9a4 4 0 0 0 8 0l-4-9Z"/>',
+    shield: '<path d="M16 3l11 4v8c0 7-4.5 11.5-11 14C9.5 26.5 5 22 5 15V7l11-4Z"/><path d="M11 16l4 4 6-8"/>',
+    partner: '<circle cx="12" cy="11" r="4"/><circle cx="22" cy="12" r="3"/><path d="M4 26c0-5 3.5-8 8-8s8 3 8 8"/><path d="M21 19c4 0 7 2.5 7 7"/>',
+    plain: '<path d="M7 4h14l5 5v19H7V4Z"/><path d="M21 4v5h5"/><path d="M11 15h11M11 19h11M11 23h7"/>',
+    lock: '<rect x="6" y="14" width="20" height="14" rx="2"/><path d="M10 14v-3a6 6 0 0 1 12 0v3"/><path d="M16 20v3"/>'
+  };
+  var TRUST_ICONS = ["shield", "partner", "plain", "lock"];
+  var PRACTICE_ICONS = ["person", "building", "scales"];
+  function icon(name, cls) {
+    var span = make("span", cls || "icon");
+    span.setAttribute("aria-hidden", "true");
+    var svg = '<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[name] || ICONS.shield) + "</svg>";
+    span.innerHTML = svg; /* constant string from ICONS above, no user content */
+    return span;
+  }
+
+  /* ---------- section renderers ---------- */
+  function renderBrand(c) {
+    var bn = c.brand.name || "NorthmereLegal";
+    $$(".brand").forEach(function (b) {
+      set($(".monogram", b), c.brand.mark);
+      var word = $(".wordmark", b);
+      if (word) {
+        word.replaceChildren();
+        var m = /^(.*?)(Legal)$/.exec(bn);
+        if (m && m[1]) { word.appendChild(document.createTextNode(m[1])); add(word, "span", "", m[2]); }
+        else word.appendChild(document.createTextNode(bn));
+        add(word, "small", "", c.brand.descriptor || "Solicitors");
+      }
+      b.setAttribute("aria-label", bn + " home");
+    });
+  }
+
+  function renderNav(c) {
+    var n = c.header.nav;
+    var items = [["Home", "#top"], [n.work, n.workUrl || "#services"], ["About", "#about"], [n.people, n.peopleUrl || "#people"], ["Insights", "#insights"], ["Contact", "#contact"], [n.cta, n.ctaUrl]];
+    $$("#navlinks > a").forEach(function (a, i) {
+      if (items[i]) { set(a, items[i][0]); setHref(a, items[i][1], "#top"); }
+    });
+  }
+
+  function renderHero(c) {
+    var h = c.hero, root = $(".hero-inner");
+    if (!root) return;
+    set($(".eyebrow", root), h.eyebrow);
+    var title = $("h1", root);
+    if (title) {
+      title.replaceChildren(document.createTextNode(h.title || ""));
+      if (h.titleAccent) { add(title, "br"); add(title, "em", "", h.titleAccent); }
+    }
+    set($(".hero-lede", root), h.lede);
+    var a = $$(".actions a", root);
+    if (a[0]) { set(a[0], (h.primaryLabel || "Explore our services") + "  →"); setHref(a[0], h.primaryUrl, "#services"); }
+    if (a[1]) { set(a[1], h.secondaryLabel || "Book a consultation"); setHref(a[1], h.secondaryUrl, "#contact"); }
+    var hero = $(".hero");
+    if (hero && h.imageUrl) hero.style.setProperty("--hero-image", 'url("' + String(h.imageUrl).replace(/["\\()\s]/g, "") + '")');
+  }
+
+  function renderTrust(c) {
+    var host = $(".trustgrid"); if (!host) return;
+    host.replaceChildren();
+    (c.trust || []).forEach(function (t, i) {
+      var item = add(host, "div", "trustitem");
+      item.appendChild(icon(TRUST_ICONS[i % TRUST_ICONS.length], "trusticon"));
+      var body = add(item, "div");
+      add(body, "strong", "", t.title);
+      add(body, "span", "", t.detail);
+    });
+  }
+
+  function renderServices(c) {
+    var sec = $("#services"); if (!sec) return;
+    var ps = c.practiceSection || {};
+    set($(".section-head .eyebrow", sec), ps.eyebrow || "What we do");
+    set($(".section-head h2", sec), ps.title);
+    set($(".section-head .section-intro", sec), ps.intro);
+    var host = $(".practice-grid", sec); if (!host) return;
+    host.replaceChildren();
+    (c.practice || []).forEach(function (p, i) {
+      var card = add(host, "article", "practice-card");
+      card.appendChild(icon(p.icon && ICONS[p.icon] ? p.icon : PRACTICE_ICONS[i % PRACTICE_ICONS.length], "practice-icon"));
+      add(card, "h3", "", p.title);
+      add(card, "p", "practice-desc", p.description);
+      var items = (p.items || []).filter(Boolean);
+      if (items.length) { var ul = add(card, "ul", "practice-list"); items.forEach(function (t) { add(ul, "li", "", t); }); }
+      var a = add(card, "a", "card-link", (p.linkLabel || "Discuss a matter") + "  →");
+      setHref(a, p.linkUrl, "#contact");
+    });
+    var more = $(".section-head .textlink", sec);
+    if (more) { set(more, ps.linkLabel || "Discuss your matter →"); setHref(more, ps.linkUrl, "#contact"); }
+  }
+
+  function renderClients(c) {
+    var sec = $("#clients"); if (!sec) return;
+    var cl = c.clients || {};
+    set($(".section-head .eyebrow", sec), cl.eyebrow || "Client relationships");
+    set($(".section-head h2", sec), cl.title);
+    set($(".section-head .section-intro", sec), cl.intro);
+    set($(".client-lead-quote", sec), cl.leadQuote);
+    set($(".client-lead-attribution", sec), (cl.leadAttribution || "") + (cl.leadDetail ? " · " + cl.leadDetail : ""));
+    var host = $(".client-proof-list", sec);
+    if (host) {
+      host.replaceChildren();
+      (cl.quotes || []).forEach(function (q) {
+        var card = add(host, "article", "client-proof-card");
+        add(card, "blockquote", "", q.quote);
+        var by = add(card, "p", "client-by");
+        add(by, "strong", "", q.attribution);
+        add(by, "span", "", q.detail);
+      });
+    }
+    var note = $(".client-proof-note", sec);
+    set(note, cl.finePrint); show(note, !!cl.finePrint);
+  }
+
+  function renderAbout(c) {
+    var sec = $("#about"); if (!sec) return;
+    var a = c.about || {}, copy = $(".about-copy", sec);
+    if (copy) {
+      set($(".eyebrow", copy), a.eyebrow);
+      set($("h2", copy), a.title);
+      set($(".about-body", copy), a.body);
+      var stats = $$(".stat", copy);
+      stats.forEach(function (el, i) {
+        var s = (a.stats || [])[i];
+        show(el, !!s);
+        if (s) { set($("strong", el), s.value); set($("span", el), s.label); }
+      });
+      var btn = $(".btn", copy);
+      set(btn, (a.buttonLabel || "Meet our partners") + "  →"); setHref(btn, a.buttonUrl, "#people");
+    }
+    var img = $(".about-image", sec);
+    if (img && a.imageUrl) img.style.backgroundImage = 'linear-gradient(0deg,rgba(2,25,21,.4),rgba(2,25,21,0)),url("' + String(a.imageUrl).replace(/["\\()\s]/g, "") + '")';
+  }
+
+  function personCard(p, opts) {
+    var card = make("article", opts.lead ? "team-lead" : "team-card");
+    var fig = add(card, "div", "team-photo");
+    var img = add(fig, "img");
+    img.src = safeUrl(p.imageUrl, ""); img.loading = "lazy"; img.decoding = "async";
+    img.alt = p.imageAlt || ("Portrait of " + (p.name || "team member"));
+    var body = add(card, "div", "team-body");
+    add(body, "p", "team-role", p.role || (opts.lead ? "Senior partner" : "Partner"));
+    add(body, "h3", "team-name", p.name);
+    var meta = [p.focus, p.based].filter(Boolean);
+    if (meta.length) { var ml = add(body, "ul", "team-meta"); meta.forEach(function (m) { add(ml, "li", "", m); }); }
+    if (p.bio) add(body, "p", "team-bio", p.bio);
+    if (opts.lead && p.quote) {
+      add(body, "blockquote", "team-quote", p.quote);
+      if (p.quoteAttribution) add(body, "p", "team-quote-by", p.quoteAttribution);
+    }
+    var link = add(body, "a", opts.lead ? "btn btn-gold" : "card-link", (opts.lead ? (p.buttonLabel || "Contact") : "Contact " + String(p.name || "").split(" ")[0]) + "  →");
+    setHref(link, p.email ? (p.email.indexOf("@") > 0 && !/^[a-z]+:/i.test(p.email) ? "mailto:" + p.email : p.email) : "#contact", "#contact");
+    return card;
+  }
+
+  function renderPeople(c) {
+    var sec = $("#people"); if (!sec) return;
+    var p = c.people || {}, wrap = $(".wrap", sec); if (!wrap) return;
+    wrap.replaceChildren();
+    var head = add(wrap, "div", "team-heading");
+    add(head, "p", "eyebrow", p.rosterTitle || "Our partners");
+    add(head, "h2", "", p.title);
+    add(head, "p", "section-intro", p.intro);
+    if (p.lead && p.lead.name) wrap.appendChild(personCard(p.lead, { lead: true }));
+    var partners = (p.partners || []).filter(function (x) { return x && x.name; });
+    if (partners.length) {
+      var grid = add(wrap, "div", "team-grid");
+      grid.setAttribute("data-count", String(Math.min(partners.length, 4)));
+      partners.forEach(function (x) { grid.appendChild(personCard(x, { lead: false })); });
+    }
+  }
+
+  function renderInsights(c) {
+    var sec = $("#insights"); if (!sec) return;
+    var ins = c.insights || {};
+    set($(".section-head .eyebrow", sec), ins.eyebrow);
+    set($(".section-head h2", sec), ins.title);
+    set($(".section-head .section-intro", sec), ins.intro);
+    var host = $(".insight-grid", sec); if (!host) return;
+    host.replaceChildren();
+    (ins.cards || []).forEach(function (x) {
+      var card = add(host, "article", "insight-card");
+      add(card, "p", "insight-tag", x.category);
+      add(card, "h3", "", x.title);
+      add(card, "p", "insight-desc", x.description);
+      var a = add(card, "a", "card-link", x.linkLabel || "Talk to our team →");
+      setHref(a, x.linkUrl, "#contact");
+    });
+  }
+
+  function renderContact(c) {
+    var sec = $("#contact"); if (!sec) return;
+    var ct = c.contact || {}, L = ct.labels || {};
+    set($(".section-head .eyebrow", sec), ct.eyebrow || "Get in touch");
+    set($(".section-head h2", sec), ct.title);
+    set($(".section-head .section-intro", sec), ct.lede);
+    set($(".contact-intro", sec), ct.assuranceText);
+    var entries = [[L.address, ct.london, ct.otherOffices], [L.direct, ct.email], [L.offices, ct.phone], [L.hours, ct.availability]];
+    $$(".info-item", sec).forEach(function (item, i) {
+      var e = entries[i]; if (!e) return;
+      var value = [e[1], e[2]].filter(Boolean).join(" · ");
+      set($("strong", item), e[0]); set($("span", item), value); show(item, !!value);
+    });
+    var grid = $(".contact-grid", sec), aside = $(".contact-info", sec);
+    var hasDetails = $$(".info-item", sec).some(function (el) { return !el.hidden; });
+    show(aside, hasDetails);
+    if (grid) grid.classList.toggle("no-details", !hasDetails);
+    var form = $("form", sec);
+    if (form) {
+      var email = $("#email", form); if (email) email.placeholder = "you@example.com";
+      var sel = $("#matter", form);
+      if (sel) {
+        sel.replaceChildren();
+        var first = add(sel, "option", "", ct.matterPlaceholder || "Select a practice area"); first.value = ""; first.disabled = true; first.selected = true;
+        (ct.matterOptions || []).forEach(function (m) { var o = add(sel, "option", "", m); o.value = m; });
+      }
+      set($("#form-notice", form), ct.formNotice);
+      set($("button[type=submit]", form), (ct.submitLabel || "Send enquiry") + "  →");
+    }
+  }
+
+  function renderFooter(c) {
+    var f = $(".footer"); if (!f) return;
+    var year = new Date().getFullYear();
+    var line = $(".copyright-line", f);
+    if (line) set(line, "© " + year + " " + c.brand.name + ". " + (c.footer.copyright || "All rights reserved."));
+    var legal = $(".legal-links", f);
+    if (legal) {
+      legal.replaceChildren();
+      (c.footer.legalLinks || []).forEach(function (x) { var a = add(legal, "a", "", x.label); setHref(a, x.url, "#contact"); });
+    }
+    var links = $(".footer-links", f);
+    if (links) {
+      links.replaceChildren();
+      (c.footer.links || []).forEach(function (x) { var a = add(links, "a", "", x.label); setHref(a, x.url, "#top"); });
+    }
+    set($(".footer-legal", f), c.footer.legal);
+  }
+
   function apply(c) {
     document.title = c.meta.title || c.brand.name;
-    var md = document.querySelector('meta[name="description"]'); if (md) md.content = c.meta.description || '';
-    var nav = document.querySelectorAll('#navlinks > a');
-    var navData = [ ['Home','#top'], ['About','#about'], [c.header.nav.work,'#services'], [c.header.nav.people,'#people'], ['Insights','#insights'], ['Contact','#contact'], [c.header.nav.cta,c.header.nav.ctaUrl] ];
-    nav.forEach(function (a, i) { if (navData[i]) { a.textContent = navData[i][0] || ''; setHref(a, navData[i][1], '#top'); } });
-    var brand = document.querySelectorAll('.brand'); brand.forEach(function (b) { var mark=b.querySelector('.monogram'); var word=b.querySelector('.wordmark'); set(mark,c.brand.mark); if(word){word.replaceChildren(); var bn=c.brand.name || 'NorthmereLegal';var mm=/^(.*?)(Legal)$/.exec(bn);if(mm&&mm[1]){word.appendChild(document.createTextNode(mm[1]));word.appendChild(make('span','',mm[2]));}else word.appendChild(document.createTextNode(bn)); var small=make('small','',c.brand.descriptor || 'Solicitors'); word.appendChild(small);} b.setAttribute('aria-label',(c.brand.name||'Firm')+' home'); });
-    var hero = document.querySelector('.hero-inner');
-    if (hero) { set(hero.querySelector('.eyebrow'), c.hero.eyebrow || 'Trusted legal partners'); var h=hero.querySelector('h1'); if(h) h.textContent=c.hero.title || ''; set(hero.querySelectorAll('p')[1], c.hero.lede); var actions=hero.querySelectorAll('.actions a'); if(actions[0]){actions[0].textContent=(c.hero.primaryLabel||'Our Services')+'  →';setHref(actions[0],c.hero.primaryUrl,'#services');} if(actions[1]){actions[1].textContent=c.hero.secondaryLabel||'Book a Consultation';setHref(actions[1],c.hero.secondaryUrl,'#contact');} }
-    var heroBg = document.querySelector('.hero'); if (heroBg && c.hero.imageUrl) heroBg.style.setProperty('--hero-image', 'url("'+String(c.hero.imageUrl).replace(/["\\]/g,'')+'")');
-    var trustHost=document.querySelector('.trustgrid'); if(trustHost) { trustHost.replaceChildren(); (c.trust||[]).forEach(function(t,i){var item=make('div','trustitem');addField(item,'div','trusticon',['♧','⚖','♙','◎'][i%4]);var body=make('div');addField(body,'strong','',t.title);addField(body,'span','',t.detail);item.appendChild(body);trustHost.appendChild(item);}); }
-    var serviceSection=document.querySelector('#services'); if(serviceSection){var head=serviceSection.querySelector('.section-head'); if(head){set(head.querySelector('h2'),c.practiceSection.title);set(head.querySelector('div:last-child p'),c.practiceSection.intro);set(head.querySelector('.textlink'),c.practiceSection.linkLabel||'Discuss your needs  →');setHref(head.querySelector('.textlink'),c.practiceSection.linkUrl,'#contact');} var host=serviceSection.querySelector('.service-grid');if(host){host.replaceChildren();(c.practice||[]).forEach(function(p,i){var card=make('article','service-card');addField(card,'div','service-icon',['♜','⚖','⌂','♧','▣','✧'][i%6]);addField(card,'h3','',p.title);addField(card,'p','',p.description);var a=addField(card,'a','arrow','→');a.setAttribute('aria-label',p.linkLabel||('Ask about '+p.title));setHref(a,p.linkUrl,'#contact');host.appendChild(card);});}}
-    var clients=document.querySelector('#clients');if(clients){var ch=clients.querySelector('.section-head');if(ch){set(ch.querySelector('.eyebrow'),'Client relationships');set(ch.querySelector('h2'),c.clients.title);set(ch.querySelector('.section-head > p'),c.clients.intro);}set(clients.querySelector('.client-lead-quote'),c.clients.leadQuote);set(clients.querySelector('.client-lead-attribution'),(c.clients.leadAttribution||'')+(c.clients.leadDetail?' · '+c.clients.leadDetail:''));var qhost=clients.querySelector('.client-proof-list');if(qhost){qhost.replaceChildren();(c.clients.quotes||[]).forEach(function(q){var card=make('article','client-proof-card');addField(card,'blockquote','',q.quote);addField(card,'strong','',q.attribution);addField(card,'span','',q.detail);qhost.appendChild(card);});}set(clients.querySelector('.client-proof-note'),c.clients.finePrint);}
-    var about=document.querySelector('#about');if(about){var copy=about.querySelector('.about-copy');if(copy){set(copy.querySelector('.eyebrow'),c.about.eyebrow);set(copy.querySelector('h2'),c.about.title);set(copy.querySelectorAll('p')[1],c.about.body);var stats=copy.querySelectorAll('.stat');(c.about.stats||[]).forEach(function(s,i){if(stats[i]){set(stats[i].querySelector('strong'),s.value);set(stats[i].querySelector('span'),s.label);}});set(copy.querySelector('.btn'),c.about.buttonLabel);setHref(copy.querySelector('.btn'),c.about.buttonUrl,'#people');}if(c.about.imageUrl)about.querySelector('.about-image').style.backgroundImage='linear-gradient(0deg,rgba(2,25,21,.45),transparent),url("'+String(c.about.imageUrl).replace(/["\\]/g,'')+'")';}
-    var people=document.querySelector('#people');if(people){var wrap=people.querySelector('.wrap');if(wrap){wrap.replaceChildren();var header=make('div','team-heading');addField(header,'p','eyebrow',c.people.rosterTitle||'Our people');addField(header,'h2','',c.people.title);addField(header,'p','team-intro',c.people.intro);wrap.appendChild(header);var grid=make('div','team-grid');var lead=c.people.lead||{};var all=[lead].concat(c.people.partners||[]);all.forEach(function(p,i){var card=make('article','team-card');var img=make('img');img.src=safeUrl(p.imageUrl,'');img.alt=p.imageAlt||('Portrait of '+(p.name||'team member'));img.loading='lazy';card.appendChild(img);addField(card,'p','team-role',p.role||(i===0?'Senior partner':p.focus));addField(card,'h3','',p.name);addField(card,'p','team-focus',p.focus||'');if(p.bio)addField(card,'p','team-bio',p.bio);var contact=make('a','textlink',i===0?(p.buttonLabel||'Contact'):'Contact');setHref(contact,p.email?'mailto:'+p.email:'#contact','#contact');card.appendChild(contact);grid.appendChild(card);});wrap.appendChild(grid);if(lead.quote){var q=make('blockquote','team-quote',lead.quote);wrap.appendChild(q);addField(wrap,'p','quote-by',lead.quoteAttribution||'');}}}
-    var insights=document.querySelector('#insights');if(insights){var head=insights.querySelector('.section-head');if(head){set(head.querySelector('.eyebrow'),c.insights.eyebrow);set(head.querySelector('h2'),c.insights.title);set(head.querySelector('.section-head > p'),c.insights.intro);}var host=insights.querySelector('.service-grid');if(host){host.replaceChildren();(c.insights.cards||[]).forEach(function(x){var card=make('article','service-card');addField(card,'p','eyebrow',x.category);addField(card,'h3','',x.title);addField(card,'p','',x.description);var a=addField(card,'a','textlink',x.linkLabel||'Talk to our team →');setHref(a,x.linkUrl,'#contact');host.appendChild(card);});}}
-    var contact=document.querySelector('#contact');if(contact){var h=contact.querySelector('.section-head');if(h){set(h.querySelector('.eyebrow'),c.contact.eyebrow||'Get in touch');set(h.querySelector('h2'),c.contact.title);set(h.querySelector('.section-head > p'),c.contact.lede);}set(contact.querySelector('.contact-intro'),c.contact.assuranceText);var info=contact.querySelectorAll('.info-item');var entries=[[c.contact.labels.address,c.contact.london],[c.contact.labels.direct,c.contact.email],[c.contact.labels.offices,c.contact.phone],[c.contact.labels.hours,c.contact.availability]];info.forEach(function(item,i){if(entries[i]){set(item.querySelector('strong'),entries[i][0]);set(item.querySelector('span'),entries[i][1]);item.style.display=entries[i][1]?'':'none';}});var form=contact.querySelector('form');if(form){var emailInput=form.querySelector('#email');if(emailInput)emailInput.placeholder=c.contact.email||'you@example.com';var notice=form.querySelector('#form-notice');set(notice,c.contact.formNotice||'This enquiry form must be connected to a secure form service before launch.');var button=form.querySelector('button[type=submit]');set(button,c.contact.submitLabel||'Prepare Enquiry  →');}}
-    var footer=document.querySelector('.footer');if(footer){var fbrand=footer.querySelector('.brand .wordmark small');set(fbrand,c.brand.descriptor||'Solicitors');var copy=footer.querySelector('.copyright span');if(copy){copy.replaceChildren(document.createTextNode('© '+new Date().getFullYear()+' '+c.brand.name+'. '+(c.footer.copyright||'All rights reserved.')));}var ll=footer.querySelector('.copyright > span:last-child');if(ll&&(c.footer.legalLinks||[]).length){ll.replaceChildren();c.footer.legalLinks.forEach(function(x,i){if(i)ll.appendChild(document.createTextNode('  ·  '));var a=addField(ll,'a','',x.label);setHref(a,x.url,'#contact');});}var fl=footer.querySelector('.footer-links');if(fl){fl.replaceChildren();(c.footer.links||[]).forEach(function(x){var a=addField(fl,'a','',x.label);setHref(a,x.url,'#top');});}}
-    window.__NORTHMERE_CONTENT__=c;window.dispatchEvent(new CustomEvent('northmerelegal:content-ready'));
+    var md = $('meta[name="description"]'); if (md) md.content = c.meta.description || "";
+    renderBrand(c); renderNav(c); renderHero(c); renderTrust(c); renderServices(c); renderClients(c);
+    renderAbout(c); renderPeople(c); renderInsights(c); renderContact(c); renderFooter(c);
+    window.__NORTHMERE_CONTENT__ = c;
+    window.dispatchEvent(new CustomEvent("northmerelegal:content-ready"));
   }
-  async function fetchLive(){var client=window.getSupabaseClient&&window.getSupabaseClient();if(!client)return null;try{var r=await client.from('site_content').select('data').eq('id',1).single();if(r.error||!r.data||!r.data.data||!Object.keys(r.data.data).length)return null;return window.normalizeBrand(merge(clone(defaults),window.cleanLegacyBrand(r.data.data)));}catch(e){return null;}}
-  async function init(){apply(window.normalizeBrand(clone(defaults)));var live=await fetchLive();if(live)apply(live);}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+
+  /* ---------- live content ---------- */
+  async function fetchLive() {
+    var client = window.getSupabaseClient && window.getSupabaseClient();
+    if (!client) return null;
+    try {
+      var r = await client.from("site_content").select("data").eq("id", 1).single();
+      if (r.error || !r.data || !r.data.data || !Object.keys(r.data.data).length) return null;
+      /* Content saved before the current copy revision is stale: keep the new built-in copy. */
+      if ((Number(r.data.data.revision) || 0) < (Number(defaults.revision) || 0)) return null;
+      return window.normalizeBrand(merge(clone(defaults), window.cleanLegacyBrand(r.data.data)));
+    } catch (e) { return null; }
+  }
+  async function init() {
+    apply(window.normalizeBrand(clone(defaults)));
+    var live = await fetchLive();
+    if (live) apply(live);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();
