@@ -30,8 +30,8 @@
 <script>
 const toggle=document.querySelector('.menu-toggle'),nav=document.querySelector('#navlinks');toggle.addEventListener('click',()=>{const open=nav.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'✕ Close':'☰ Menu'});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');toggle.setAttribute('aria-expanded','false');toggle.textContent='☰ Menu'}));document.querySelector('#year').textContent=new Date().getFullYear();document.querySelector('#contact-form').addEventListener('submit',e=>{e.preventDefault();const d=new FormData(e.currentTarget);const subject=encodeURIComponent('Consultation enquiry — NorthmereLegal');const body=encodeURIComponent(`Name: ${d.get('name')}\nEmail: ${d.get('email')}\nPhone: ${d.get('phone')||'Not provided'}\n\nEnquiry:\n${d.get('message')}`);document.querySelector('#form-notice').textContent='Your email application should open with the enquiry prepared. Please connect a secure form endpoint before launch.';const content=window.__NORTHMERE_CONTENT__||{};const recipient=(content.contact&&content.contact.email)||'';if(!recipient||recipient.indexOf('@')<1){document.querySelector('#form-notice').textContent='The firm email address has not been configured yet. Please use the contact details shown on this page.';return;}window.location.href=`mailto:${recipient}?subject=${subject}&body=${body}`});
 </script>
-<script src="assets/js/site-content.js?v=7"></script>
+<script src="assets/js/site-content.js?v=8"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="assets/js/supabase-config.js?v=7"></script>
-<script src="assets/js/content.js?v=7"></script>
+<script src="assets/js/supabase-config.js?v=8"></script>
+<script src="assets/js/content.js?v=8"></script>
 </body></html>
