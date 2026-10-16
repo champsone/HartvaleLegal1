@@ -807,3 +807,49 @@ h1, h2, h3 { font-optical-sizing: auto; font-variation-settings: "opsz" 72; }
 @media (max-width: 960px) {
   .hero-media { min-height: 0; width: 100%; }
 }
+
+/* ==========================================================================
+   Responsive pass: phone, tablet, desktop
+   ========================================================================== */
+/* Dropdown arrow was tiling into a hatch pattern */
+.field select { background-repeat: no-repeat; background-position: right 16px center; background-size: 12px 8px; padding-right: 44px; }
+
+/* Never allow sideways scrolling; keep media inside its column */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { overflow-x: hidden; }
+img, svg, video { max-width: 100%; }
+.hero-copy, .practice, .lead-copy, .quotes-grid figure, .lead-form { min-width: 0; overflow-wrap: break-word; }
+
+/* Large screens: keep line length and spacing under control */
+@media (min-width: 1600px) {
+  :root { font-size: 17px; }
+}
+@media (min-width: 961px) and (max-width: 1180px) {
+  .practice-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .practice { padding-inline: 22px; }
+}
+
+/* Tablet and below */
+@media (max-width: 960px) {
+  .trust ul { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-block: 8px; }
+  .trust li { padding: 16px 14px; border-left: 0; }
+  .trust li:nth-child(even) { border-left: 1px solid rgba(217, 194, 143, .28); }
+  .trust li:nth-child(n + 3) { border-top: 1px solid rgba(217, 194, 143, .28); }
+  .practice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .practice-grid { grid-template-columns: minmax(0, 1fr); }
+  .hero-actions { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .hero-actions .btn { width: 100%; }
+  .lead-form .btn[type="submit"], .lead-copy .btn { width: 100%; }
+  .field input, .field select, .field textarea { font-size: 16px; } /* stops iOS zoom on focus */
+  .contact-points { grid-template-columns: 1fr 1fr; gap: 12px; }
+}
+
+/* Touch devices: comfortable 44px tap targets */
+@media (pointer: coarse) {
+  .navlinks a, .menu-toggle { min-height: 44px; display: inline-flex; align-items: center; }
+  .textlink, .roster a, .footer a { display: inline-flex; align-items: center; min-height: 44px; }
+  .consent input { width: 22px; height: 22px; }
+  .footer-top nav, .footer-bottom nav { gap: 4px 20px; }
+}
