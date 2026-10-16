@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Ashford Vale | Stylesheet
+   Northmere Legal | Stylesheet
    1. Tokens      4. Components        7. Responsive (narrow desktop windows)
    2. Base        5. Sections
    3. Layout      6. Motion
@@ -7,22 +7,22 @@
 
 /* 1. Tokens ---------------------------------------------------------------- */
 :root {
-  --ivory: #f4f2ed;
-  --paper: #fbfaf7;
-  --stone: #e6e2db;
-  --ink: #1b2730;
-  --muted: #5e666b;
-  --rule: #d1cec7;
+  --ivory: #f5f4ef;
+  --paper: #fffefa;
+  --stone: #e3e8e2;
+  --ink: #172b26;
+  --muted: #596760;
+  --rule: #d5ddd5;
 
-  --navy: #1b2b33;
-  --navy-deep: #101a20;
-  --navy-soft: #243942;
+  --navy: #17372f;
+  --navy-deep: #102720;
+  --navy-soft: #244a40;
 
-  --wine: #642d3d;
-  --wine-hover: #7b4351;
+  --wine: #9a6b3f;
+  --wine-hover: #b17b4b;
 
-  --gold: #d4c19c;
-  --gold-deep: #8a7448;
+  --gold: #e1c69b;
+  --gold-deep: #987344;
 
   --serif: "Newsreader", Georgia, "Times New Roman", serif;
   --sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
@@ -30,7 +30,7 @@
   --gutter: clamp(20px, 4vw, 40px);
   --max: 1200px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --lift: 0 22px 44px rgba(27, 39, 48, 0.12);
+  --lift: 0 24px 55px rgba(23, 55, 47, 0.14);
 }
 
 /* 2. Base ------------------------------------------------------------------ */
@@ -558,3 +558,16 @@ h1, h2, h3 {
   .roster a { grid-column: 2; justify-self: start; }
   .form-actions .btn { width: 100%; }
 }
+
+
+/* Northmere refinement: warmer metallic accents, softer surfaces and a confident editorial feel. */
+.site-header { background: rgba(245,244,239,.94); backdrop-filter: blur(14px); }
+.brand .mark { box-shadow: 0 5px 16px rgba(23,55,47,.16); }
+.btn { border-radius: 3px; box-shadow: 0 7px 18px rgba(23,55,47,.10); transition: transform .22s ease, background .22s ease, box-shadow .22s ease; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(23,55,47,.16); }
+.practice { border-radius: 8px; overflow: hidden; }
+.hero-media { border-radius: 10px 0 0 10px; overflow: hidden; box-shadow: 0 28px 70px rgba(16,39,32,.16); }
+.hero-media img { transition: transform .8s cubic-bezier(.2,.7,.2,1); }
+.hero-media:hover img { transform: scale(1.025); }
+.clients { background: radial-gradient(80% 90% at 90% 0%, #376458 0%, transparent 65%), linear-gradient(150deg, #17372f, #102720); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
