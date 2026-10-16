@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Northmere Legal | Stylesheet
+   Ashford Vale | Stylesheet
    1. Tokens      4. Components        7. Responsive (narrow desktop windows)
    2. Base        5. Sections
    3. Layout      6. Motion
@@ -7,22 +7,22 @@
 
 /* 1. Tokens ---------------------------------------------------------------- */
 :root {
-  --ivory: #f5f4ef;
-  --paper: #fffefa;
-  --stone: #e3e8e2;
-  --ink: #172b26;
-  --muted: #596760;
-  --rule: #d5ddd5;
+  --ivory: #f4f2ed;
+  --paper: #fbfaf7;
+  --stone: #e6e2db;
+  --ink: #1b2730;
+  --muted: #5e666b;
+  --rule: #d1cec7;
 
-  --navy: #17372f;
-  --navy-deep: #102720;
-  --navy-soft: #244a40;
+  --navy: #1b2b33;
+  --navy-deep: #101a20;
+  --navy-soft: #243942;
 
-  --wine: #9a6b3f;
-  --wine-hover: #b17b4b;
+  --wine: #642d3d;
+  --wine-hover: #7b4351;
 
-  --gold: #e1c69b;
-  --gold-deep: #987344;
+  --gold: #d4c19c;
+  --gold-deep: #8a7448;
 
   --serif: "Newsreader", Georgia, "Times New Roman", serif;
   --sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
@@ -30,7 +30,7 @@
   --gutter: clamp(20px, 4vw, 40px);
   --max: 1200px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --lift: 0 24px 55px rgba(23, 55, 47, 0.14);
+  --lift: 0 22px 44px rgba(27, 39, 48, 0.12);
 }
 
 /* 2. Base ------------------------------------------------------------------ */
@@ -560,14 +560,133 @@ h1, h2, h3 {
 }
 
 
-/* Northmere refinement: warmer metallic accents, softer surfaces and a confident editorial feel. */
-.site-header { background: rgba(245,244,239,.94); backdrop-filter: blur(14px); }
-.brand .mark { box-shadow: 0 5px 16px rgba(23,55,47,.16); }
-.btn { border-radius: 3px; box-shadow: 0 7px 18px rgba(23,55,47,.10); transition: transform .22s ease, background .22s ease, box-shadow .22s ease; }
-.btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(23,55,47,.16); }
-.practice { border-radius: 8px; overflow: hidden; }
-.hero-media { border-radius: 10px 0 0 10px; overflow: hidden; box-shadow: 0 28px 70px rgba(16,39,32,.16); }
-.hero-media img { transition: transform .8s cubic-bezier(.2,.7,.2,1); }
-.hero-media:hover img { transform: scale(1.025); }
-.clients { background: radial-gradient(80% 90% at 90% 0%, #376458 0%, transparent 65%), linear-gradient(150deg, #17372f, #102720); }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+/* ==========================================================================
+   NORTHMERE LEGAL — premium visual refinement
+   Forest green, warm ivory and champagne gold; responsive and motion-aware.
+   ========================================================================== */
+:root {
+  --ivory: #f4f3ed;
+  --paper: #fffefa;
+  --stone: #e5e4da;
+  --ink: #182b25;
+  --muted: #64716a;
+  --rule: #d8d9cf;
+  --navy: #183d32;
+  --navy-deep: #102b23;
+  --navy-soft: #245044;
+  --wine: #b18a50;
+  --wine-hover: #c29d65;
+  --gold: #e4d0a8;
+  --gold-deep: #987545;
+  --lift: 0 26px 60px rgba(24, 43, 37, .13);
+}
+body { background: var(--ivory); color: var(--ink); }
+::selection { background: #d9c69f; color: #183d32; }
+:focus-visible { outline-color: #b18a50; }
+.topline { background: var(--navy-deep); color: #f7f4eb; }
+.topline a { color: var(--gold); }
+.site-header {
+  background: rgba(255,254,250,.94);
+  border-bottom: 1px solid rgba(24,61,50,.10);
+  backdrop-filter: blur(18px);
+}
+.brand .mark {
+  background: var(--navy);
+  color: #f8f3e8;
+  border-radius: 3px;
+  box-shadow: 0 5px 15px rgba(24,61,50,.15);
+}
+.wordmark { color: var(--navy-deep); letter-spacing: -.035em; }
+.wordmark small { color: var(--gold-deep); letter-spacing: .16em; text-transform: uppercase; }
+.navlinks a:not(.btn) { transition: color .2s ease; }
+.navlinks a:not(.btn):hover { color: var(--gold-deep); }
+.btn {
+  background: var(--navy);
+  border: 1px solid var(--navy);
+  border-radius: 2px;
+  box-shadow: 0 8px 20px rgba(24,61,50,.12);
+  transition: background .22s ease, transform .22s ease, box-shadow .22s ease;
+}
+.btn:hover {
+  background: var(--navy-soft);
+  box-shadow: 0 12px 28px rgba(24,61,50,.19);
+  transform: translateY(-2px);
+}
+.btn--small { box-shadow: none; }
+.textlink { color: var(--navy); text-decoration-color: var(--gold-deep); text-underline-offset: 5px; }
+.textlink:hover { color: var(--gold-deep); }
+.hero { background: var(--paper); }
+.hero-copy { position: relative; }
+.hero h1 { color: var(--navy-deep); letter-spacing: -.045em; }
+.hero .lede { color: #56665e; }
+.hero-media { overflow: hidden; background: #d9dfd8; }
+.hero-media img {
+  filter: saturate(.72) contrast(1.04);
+  transition: transform .8s cubic-bezier(.2,.7,.2,1);
+}
+.hero-media:hover img { transform: scale(1.035); }
+.hero-media figcaption {
+  background: rgba(16,43,35,.88);
+  color: #f8f3e8;
+  border-left: 3px solid var(--gold);
+}
+.trust { background: var(--navy); color: #f8f6ef; }
+.trust li strong { color: var(--gold); }
+.trust li span { color: rgba(248,246,239,.76); }
+.section-head h2, .practice h3, .lead-copy h3, .contact h2 { color: var(--navy-deep); }
+.section-head h2::before { background: var(--gold-deep); }
+.practice-grid { gap: 18px; }
+.practice {
+  background: var(--paper);
+  border: 1px solid rgba(24,61,50,.11);
+  box-shadow: 0 8px 28px rgba(24,43,37,.035);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.practice:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--lift);
+  border-color: rgba(152,117,69,.45);
+}
+.practice-icon { color: var(--gold-deep); }
+.clients { background: var(--navy-deep); color: #f7f4ec; }
+.clients .section-head h2 { color: #fffdf7; }
+.clients .section-head p { color: rgba(247,244,236,.72); }
+.lead-quote, .quotes-grid figure {
+  border-color: rgba(228,208,168,.25);
+}
+.clients blockquote { color: #fffdf7; }
+.clients figcaption { color: rgba(247,244,236,.7); }
+.clients figcaption strong { color: var(--gold); }
+.clients .fine-print { color: rgba(247,244,236,.58); }
+.people { background: #f4f3ed; }
+.lead-partner, .partners-row .standard {
+  background: var(--paper);
+  border: 1px solid rgba(24,61,50,.1);
+}
+.lead-portrait img { filter: saturate(.78); }
+.roster li { border-color: var(--rule); }
+.roster li img { border: 2px solid #e3d4b5; }
+.roster li a { color: var(--gold-deep); }
+.contact { background: #e9e9df; }
+.contact h2 { letter-spacing: -.035em; }
+.contact input, .contact textarea, .contact select {
+  border: 1px solid #cfd3c9;
+  background: #fffefa;
+  border-radius: 2px;
+}
+.contact input:focus, .contact textarea:focus, .contact select:focus {
+  border-color: var(--gold-deep);
+  box-shadow: 0 0 0 3px rgba(152,117,69,.12);
+  outline: none;
+}
+.footer { background: var(--navy-deep); color: #f7f4ec; }
+.footer a:hover { color: var(--gold); }
+@media (max-width: 760px) {
+  .hero { background: var(--paper); }
+  .hero-media { border-radius: 2px; }
+  .section { padding-block: 64px; }
+  .practice { padding: 25px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-media img, .practice, .btn { transition: none !important; }
+}
