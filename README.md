@@ -85,3 +85,8 @@ Supabase *service_role* key here.
 ## NorthmereLegal brand and launch notes
 
 The site has been rebranded to NorthmereLegal with a refined forest-green, warm ivory and brass visual system. The `CNAME` file is set to `northmerelegal.com`; confirm the domain is acquired and DNS is configured before launch. Review all office locations, regulatory statements, contact details, team biographies, testimonials, and practice-area descriptions for accuracy before launch.
+
+
+## Editing everything in /admin/
+
+All homepage text, labels, links and lists are editable. Practice areas (and their bullet lists), trust items, client quotes, partners, contact steps, form dropdown options and footer links can be added, removed and reordered with the buttons on each card. Images are set by URL in the **URL key** section. The page structure, colours and fonts remain in `index.html` and `styles.css`.
