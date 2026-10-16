@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#17262e">
+  <meta name="theme-color" content="#153b32">
   <title>NorthmereLegal | Admin</title>
   <style>
-    :root { --navy:#17262e; --navy-2:#223943; --paper:#f5f3ee; --white:#fff; --ink:#17262e; --muted:#667176; --line:#d8d8d1; --gold:#d4c19c; --wine:#642d3d; --green:#276957; --danger:#a94747; --shadow:0 18px 45px rgba(23,38,46,.12); }
+    :root { --navy:#153b32; --navy-2:#20483e; --paper:#f5f3ee; --white:#fff; --ink:#17262e; --muted:#667176; --line:#d8d8d1; --gold:#d9c28f; --wine:#76572b; --green:#276957; --danger:#a94747; --shadow:0 18px 45px rgba(23,38,46,.12); }
     * { box-sizing:border-box; }
     body { margin:0; background:var(--paper); color:var(--ink); font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
     button, input, textarea { font:inherit; }
@@ -24,8 +24,8 @@
     .auth-copy { margin:0 0 26px; color:var(--muted); }
     .field { display:grid; gap:6px; margin:0 0 16px; }
     label { font-size:13px; font-weight:700; }
-    input, textarea { width:100%; padding:11px 12px; border:1px solid #bfc5c5; border-radius:3px; background:#fff; color:var(--ink); }
-    input:focus, textarea:focus { outline:3px solid rgba(212,193,156,.5); border-color:var(--wine); }
+    input, textarea, select { width:100%; padding:11px 12px; border:1px solid #bfc5c5; border-radius:3px; background:#fff; color:var(--ink); }
+    input:focus, textarea:focus, select:focus { outline:3px solid rgba(212,193,156,.5); border-color:var(--wine); }
     textarea { min-height:104px; resize:vertical; }
     .btn { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 18px; border:1px solid var(--navy); border-radius:3px; background:var(--navy); color:#fff; font-weight:750; }
     .btn:hover { background:var(--wine); border-color:var(--wine); }
@@ -72,6 +72,14 @@
     .url-row strong { display:block; font-size:13px; }
     .url-row span { display:block; color:var(--muted); font-size:12px; }
     .footer-note { margin-top:22px; color:var(--muted); font-size:12px; }
+    select { padding:11px 12px; border:1px solid #bfc5c5; border-radius:3px; background:#fff; color:var(--ink); }
+    .card-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px; }
+    .card-head h3 { margin:0; }
+    .card-tools { display:flex; gap:6px; }
+    .btn--tiny { min-height:32px; padding:0 10px; font-size:13px; }
+    .btn:disabled { opacity:.4; cursor:default; }
+    .string-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:end; }
+    .string-row .btn { margin-bottom:16px; }
     @media (max-width:760px) { .app-header-inner,.workspace-intro { align-items:flex-start; } .app-header-inner,.workspace-intro { flex-direction:column; } .header-actions { width:100%; } .workspace { width:min(100% - 24px,1260px); padding-top:24px; } .field-grid { grid-template-columns:1fr; } .field-grid .full { grid-column:auto; } .editor-section { padding:18px; } .url-row { grid-template-columns:1fr; gap:7px; } .auth-card { padding:28px 22px; } }
   </style>
 </head>
@@ -93,9 +101,9 @@
     </section>
 
     <section class="app" id="app">
-      <header class="app-header"><div class="app-header-inner"><div class="admin-brand"><div class="admin-mark">H</div><div><strong>NorthmereLegal</strong><span>Content studio</span></div></div><div class="header-actions"><button class="btn btn--gold" id="save" type="button">Save changes</button><button class="btn btn--quiet" id="preview" type="button">Preview homepage</button><button class="btn btn--quiet" id="export" type="button">Export JSON backup</button><label class="btn btn--quiet" for="import-file">Import JSON</label><input id="import-file" type="file" accept="application/json" hidden><button class="btn btn--quiet" id="lock" type="button">Sign out</button></div></div></header>
+      <header class="app-header"><div class="app-header-inner"><div class="admin-brand"><div class="admin-mark">N</div><div><strong>NorthmereLegal</strong><span>Content studio</span></div></div><div class="header-actions"><button class="btn btn--gold" id="save" type="button">Save changes</button><button class="btn btn--quiet" id="preview" type="button">Preview homepage</button><button class="btn btn--quiet" id="export" type="button">Export JSON backup</button><label class="btn btn--quiet" for="import-file">Import JSON</label><input id="import-file" type="file" accept="application/json" hidden><button class="btn btn--quiet" id="lock" type="button">Sign out</button></div></div></header>
       <main class="workspace">
-        <div class="workspace-intro"><div><div class="kicker">Homepage control</div><h1>Edit the public site</h1><p>Every field below writes to the same content model used by the homepage. Keep links relative where possible, for example <code>#contact</code> or <code>/privacy/</code>.</p><p class="save-status" id="save-status" role="status" aria-live="polite"></p></div><div class="mode-note"><strong>Live mode</strong><br>Changes save straight to the database and go live for every visitor immediately. Use "Export JSON backup" occasionally so you always have an offline copy.</div></div>
+        <div class="workspace-intro"><div><div class="kicker">Homepage control</div><h1>Edit the public site</h1><p>Every field below writes to the same content model used by the homepage. Add, remove and reorder items with the buttons on each card. Keep links relative where possible, for example <code>#contact</code> or <code>/privacy/</code>.</p><p class="save-status" id="save-status" role="status" aria-live="polite"></p></div><div class="mode-note"><strong>Live mode</strong><br>Changes save straight to the database and go live for every visitor immediately. Use "Export JSON backup" occasionally so you always have an offline copy.</div></div>
         <div id="editor"></div>
         <p class="footer-note">Content is stored in your Supabase project and is only editable by a signed-in admin account (managed from your Supabase dashboard, not from this page). The public enquiry form can send submissions to Formspree after you add your endpoint URL.</p>
       </main>
