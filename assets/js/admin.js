@@ -50,6 +50,7 @@
     practice: { icon: "person", title: "New practice area", description: "", items: [""], linkLabel: "Discuss a matter", linkUrl: "#contact" },
     quote: { quote: "", attribution: "", detail: "" },
     partner: { name: "New partner", focus: "", email: "", imageUrl: "", imageAlt: "" },
+    insight: { category: "General", title: "New insight", description: "", linkLabel: "Talk to our team →", linkUrl: "#contact" },
     step: { title: "", text: "" },
     link: { label: "", url: "#" },
     text: ""
@@ -94,6 +95,8 @@
       ["Hero primary button", "hero.primaryUrl", "Use #contact, a page path, or a full https:// URL."],
       ["Hero secondary button", "hero.secondaryUrl", "Destination for the secondary hero action."],
       ["Hero image URL", "hero.imageUrl", "Full https:// image address, or a path to an image in the repository."],
+      ["About section image URL", "about.imageUrl", "Background image for the about section."],
+      ["About button URL", "about.buttonUrl", "Destination for the about section button."],
       ["Lead contact URL or email", "people.lead.email", "Use an email address, an internal path, or a full https:// URL."],
       ["Lead partner image URL", "people.lead.imageUrl", "Portrait source used in the people section."],
       ["Contact email URL", "contact.emailHref", "Optional. Leave blank to link the displayed email automatically."],
@@ -118,7 +121,7 @@
         field("Clients navigation label", "header.nav.clients"), field("People navigation label", "header.nav.people"), field("Header button label", "header.nav.cta")
       ])) +
       section("Hero", "The first screen visitors see. Button destinations and the image URL are in the URL key below.", grid([
-        field("Headline", "hero.title", "textarea", "Keep this concise for the visual layout.", true), field("Intro text", "hero.lede", "textarea", "The paragraph below the headline.", true),
+        field("Eyebrow", "hero.eyebrow"), field("Headline", "hero.title", "textarea", "Keep this concise for the visual layout.", true), field("Intro text", "hero.lede", "textarea", "The paragraph below the headline.", true),
         field("Primary button label", "hero.primaryLabel"), field("Secondary button label", "hero.secondaryLabel"),
         field("Image alt text", "hero.imageAlt", "textarea", "Describe the image for accessibility.", true), field("Image caption", "hero.caption")
       ])) +
@@ -128,6 +131,17 @@
         field("Section title", "clients.title"), field("Section intro", "clients.intro", "textarea", "", true),
         field("Lead quote", "clients.leadQuote", "textarea", "Use approved wording only.", true), field("Lead attribution", "clients.leadAttribution"), field("Lead matter detail", "clients.leadDetail"), field("Disclosure note", "clients.finePrint", "textarea", "Keep any required legal disclosure.", true)
       ]) + repeatGrid(quoteCards) + addButton("clients.quotes", "quote", "Add quote")) +
+      section("About section", "Edit the firm introduction, visual, proof points and call-to-action.", grid([
+        field("Eyebrow", "about.eyebrow"), field("Heading", "about.title", "textarea", "Use a line break if needed.", true),
+        field("Introduction", "about.body", "textarea", "Short, accurate firm introduction.", true), field("Button label", "about.buttonLabel"),
+        field("Proof point 1 value", "about.stats.0.value"), field("Proof point 1 label", "about.stats.0.label"),
+        field("Proof point 2 value", "about.stats.1.value"), field("Proof point 2 label", "about.stats.1.label"),
+        field("Proof point 3 value", "about.stats.2.value"), field("Proof point 3 label", "about.stats.2.label")
+      ])) +
+      section("Insights section", "Edit the perspectives cards shown on the homepage.", grid([
+        field("Eyebrow", "insights.eyebrow"), field("Heading", "insights.title", "textarea", "Section heading.", true),
+        field("Introduction", "insights.intro", "textarea", "Short introduction.", true)
+      ]) + repeatGrid((state.insights.cards || []).map(function (item, i) { return listCard("insights.cards", i, state.insights.cards.length, "Insight " + (i + 1), [field("Category", "insights.cards." + i + ".category"), field("Title", "insights.cards." + i + ".title"), field("Description", "insights.cards." + i + ".description", "textarea", "", true), field("Link label", "insights.cards." + i + ".linkLabel"), field("Link URL", "insights.cards." + i + ".linkUrl", "url")]); })) + addButton("insights.cards", "insight", "Add insight")) +
       section("People", "Lead partner and partner roster. Email and image addresses are in the URL key.", grid([
         field("Section title", "people.title"), field("Section intro", "people.intro", "textarea", "", true),
         field("Lead name", "people.lead.name"), field("Lead role", "people.lead.role"), field("Lead biography", "people.lead.bio", "textarea", "", true),
@@ -136,6 +150,7 @@
         field("Roster heading", "people.rosterTitle")
       ]) + repeatGrid(partnerCards) + addButton("people.partners", "partner", "Add partner")) +
       section("Contact and enquiry", "Office details, reassurance text, the enquiry form and its messages.", grid([
+        field("Eyebrow", "contact.eyebrow"), field("Form notice", "contact.formNotice", "textarea", "Shown beneath the form submit button.", true),
         field("Section title", "contact.title"), field("Intro", "contact.lede", "textarea", "", true),
         field("Reassurance heading", "contact.assuranceTitle"), field("Reassurance text", "contact.assuranceText", "textarea", "", true),
         field("Address label", "contact.labels.address"), field("London address", "contact.london", "textarea"),

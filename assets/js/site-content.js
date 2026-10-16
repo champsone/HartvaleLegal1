@@ -16,15 +16,16 @@
       nav: { work: "Our work", workUrl: "#practice", clients: "Clients", clientsUrl: "#clients", people: "Our people", peopleUrl: "#people", cta: "Start a conversation", ctaUrl: "#contact" }
     },
     hero: {
+      eyebrow: "Trusted legal partners",
       title: "Clarity in complexity.",
       lede: "NorthmereLegal advises private clients, businesses and institutions on decisions that deserve careful thought, sound judgement and a clear way forward.",
       primaryLabel: "Arrange a conversation",
       primaryUrl: "#contact",
       secondaryLabel: "View our work",
       secondaryUrl: "#practice",
-      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=85",
-      imageAlt: "Geometric glass office facade against a pale sky",
-      caption: "Advice for what comes next."
+      imageAlt: "Contemporary professional office interior",
+      caption: "Advice for what comes next.",
+      imageUrl: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=2000&q=88"
     },
     trust: [
       { title: "Independent", detail: "Owned and run by its partners" },
@@ -32,7 +33,7 @@
       { title: "Partner-led", detail: "Senior lawyers on every matter" },
       { title: "Discreet", detail: "Careful handling of sensitive matters" }
     ],
-    practiceSection: { title: "Sound advice for important decisions.", intro: "We help clients understand their position, assess their options and move forward with confidence." },
+    practiceSection: { title: "Comprehensive Legal Services", intro: "Practical support across the matters that shape your life, business and future.", linkLabel: "Discuss your needs →", linkUrl: "#contact" },
     practice: [
       { icon: "person", title: "Private wealth and family", description: "Practical advice on wealth, succession and family arrangements, handled with discretion and care.", items: ["Wills, trusts and estate planning", "Succession and inheritance disputes", "Divorce and financial remedies", "Family business and wealth structuring"], linkLabel: "Discuss a private matter", linkUrl: "#contact" },
       { icon: "building", title: "Property and the built world", description: "Commercial guidance for acquisitions, development, investment and the places clients are responsible for.", items: ["Acquisitions and disposals", "Development and construction", "Landlord and tenant", "Heritage and listed buildings"], linkLabel: "Discuss a property matter", linkUrl: "#contact" },
@@ -65,16 +66,37 @@
         { name: "Eleanor Shaw", focus: "Private wealth and family", email: "", imageUrl: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=160&q=85", imageAlt: "Portrait of Eleanor Shaw" }
       ]
     },
+    about: {
+      eyebrow: "About NorthmereLegal",
+      title: "Experience. Integrity. Results.",
+      body: "Legal matters are rarely just legal matters. We take time to understand the full picture, explain your options clearly and help you make informed decisions.",
+      buttonLabel: "Meet the firm",
+      buttonUrl: "#people",
+      imageUrl: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=85",
+      stats: [{ value: "01", label: "Clear point of contact" }, { value: "360°", label: "Whole-picture thinking" }, { value: "100%", label: "Focused on your matter" }]
+    },
+    insights: {
+      eyebrow: "Perspectives & insights",
+      title: "Make your next decision a stronger one.",
+      intro: "Good decisions start with the right questions. Our team can help you understand the issues that matter and the options available to you.",
+      cards: [
+        { category: "Business", title: "Building stronger commercial agreements", description: "Understand the value of clear responsibilities, workable terms and good governance.", linkLabel: "Talk to our team →", linkUrl: "#contact" },
+        { category: "Property", title: "Clarity before a property commitment", description: "Key questions to raise before you make a significant property decision.", linkLabel: "Talk to our team →", linkUrl: "#contact" },
+        { category: "Individuals", title: "Handling sensitive matters with care", description: "Why clear advice and a considered plan can make a difficult process easier.", linkLabel: "Talk to our team →", linkUrl: "#contact" }
+      ]
+    },
     contact: {
-      title: "Find the right way forward.",
+      eyebrow: "Get in touch",
+      title: "Request a Consultation",
       lede: "Tell us briefly what you are dealing with. We will review your enquiry and come back to you with a sensible next step.",
       assuranceTitle: "A considered first step",
-      assuranceText: "Share only a brief outline. Please do not include confidential documents or urgent deadlines in this initial message.",
+      assuranceText: "Use the form below to start a conversation with our team. Please do not include confidential documents or urgent deadlines in this initial message.",
+      formNotice: "This enquiry form must be connected to a secure form service before launch.",
       steps: [
         { title: "We listen first", text: "Understand the issue before discussing options." },
         { title: "Clear next steps", text: "Know what information may be needed next." }
       ],
-      labels: { address: "London", direct: "Direct", offices: "Other offices", hours: "Availability" },
+      labels: { address: "Our Office", direct: "Email Us", offices: "Call Us", hours: "Business Hours" },
       formLabel: "Initial enquiry",
       submitLabel: "Send enquiry",
       matterPlaceholder: "Select a practice",
