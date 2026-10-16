@@ -35,6 +35,13 @@ create policy "Signed-in admin can update site content"
   using (true)
   with check (true);
 
+drop policy if exists "Signed-in admin can insert site content" on public.site_content;
+create policy "Signed-in admin can insert site content"
+  on public.site_content
+  for insert
+  to authenticated
+  with check (id = 1);
+
 -- Note on admin accounts:
 -- Do NOT enable public sign-up for this project. Instead, create your own
 -- admin login from Dashboard -> Authentication -> Users -> Add user, using
