@@ -27,6 +27,10 @@ Changes are saved to the `site_content` row in Supabase. The homepage reads that
 
 The SQL policies allow public reads for homepage rendering and authenticated writes. Keep public sign-up disabled and only create trusted administrator accounts. For stricter multi-user deployments, change the write policy to check an explicit admin role in Supabase JWT app metadata.
 
+## Content revisions
+
+`assets/js/site-content.js` carries a `revision` number. Content saved in Supabase with a lower revision is treated as out of date: the public site shows the built-in copy, and the admin loads it with a notice. Press **Save changes** once to publish it. Bump `revision` whenever you ship a new default copy deck.
+
 ## Important launch checks
 
 - Replace all illustrative people, sample client comments, office details, email and phone with verified, approved information.
@@ -38,7 +42,9 @@ The SQL policies allow public reads for homepage rendering and authenticated wri
 
 ## Project files
 
-- `index.html` — public homepage and responsive design
+- `index.html` — public homepage (pre-rendered with the default copy for search engines and no-JS visitors)
+- `assets/css/site.css` — site stylesheet
+- `assets/js/site.js` — mobile menu, active-section highlight and enquiry form
 - `admin/index.html` — authenticated content studio
 - `assets/js/site-content.js` — default editable content model
 - `assets/js/content.js` — homepage renderer and Supabase live-content loader
