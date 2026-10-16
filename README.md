@@ -1,92 +1,47 @@
-# NorthmereLegal website
+# NorthmereLegal — connected homepage and admin content studio
 
-A static site (still hosted for free on GitHub Pages), with live content
-stored in a small managed database (Supabase). Editing the homepage through
-`/admin/` now publishes instantly for every visitor — no manual export/commit
-step. Open the site root in a browser to preview it.
+This is a static, mobile-responsive legal-services concept site. The public homepage reads its editable content model from Supabase and falls back to the local defaults if the database is unavailable. The admin studio at `/admin/` lets an authenticated administrator edit the content model and publish changes without changing source code.
 
-## Structure
+## What the admin can edit
 
-```
-northmerelegal/
-├── index.html                 Public homepage structure
-├── admin/index.html           Content studio at `/admin/`
-├── supabase/setup.sql         Run once in Supabase to create the database table
-├── README.md
-└── assets/
-    ├── css/styles.css         All styling
-    └── js/
-        ├── site-content.js    Fallback content, shown instantly and if Supabase is unreachable
-        ├── supabase-config.js Your Supabase project URL + anon key (fill this in)
-        ├── content.js         Homepage content renderer (defaults, then live data)
-        ├── admin.js           Content studio: sign-in, editor, save/import/export
-        └── main.js            Mobile menu, footer year, enquiry form
-```
+- Brand identity, browser/search metadata and navigation labels
+- Homepage hero text, calls to action and hero image URL
+- Trust/credibility strip items
+- Service cards (add, remove and reorder)
+- Client-proof/testimonial content (use only genuine, approved statements)
+- About section text, image URL, button and proof points
+- Team heading, lead profile, team members, portraits, roles/focus, contact links and quote
+- Insights cards (add, remove and reorder)
+- Contact details, form labels, messages and destinations
+- Footer text and links
 
-## One-time setup (Supabase)
+Changes are saved to the `site_content` row in Supabase. The homepage reads that same row on each visit. If Supabase cannot be reached, the public page continues to show the built-in defaults.
 
-1. Create a free project at [supabase.com](https://supabase.com).
-2. In your project, open **SQL Editor -> New query**, paste the contents of
-   `supabase/setup.sql`, and run it. This creates the `site_content` table
-   and the security rules (public read, admin-only write).
-3. Create your admin login: **Authentication -> Users -> Add user**, using
-   your real email and a strong password. Do **not** enable public sign-up —
-   this is the only account that should be able to edit the site.
-4. Copy your **Project URL** and **anon public key** from
-   **Project settings -> API**, and paste them into
-   `assets/js/supabase-config.js`.
-5. Commit and push. The homepage and `/admin/` are now connected to your
-   database.
+## Supabase setup
 
-## Admin studio
+1. In Supabase, open **SQL Editor** and run `supabase/setup.sql`.
+2. In **Authentication → Users**, create the administrator account. Keep public sign-up disabled.
+3. Check `assets/js/supabase-config.js` contains the correct project URL and **anon public** key. The anon key is intended to be public; never put a `service_role` key in browser code.
+4. Publish the repository, then open `/admin/`, sign in, edit content and choose **Save changes**.
+5. Use **Export JSON backup** before major edits. Imported JSON is not published until Save changes is clicked.
 
-Open `/admin/` on the deployed site and sign in with the admin email and
-password you created in Supabase. The studio edits the full homepage content
-model — headings, navigation, practice areas, testimonials, people, contact
-details, images, and every button/link destination.
+The SQL policies allow public reads for homepage rendering and authenticated writes. Keep public sign-up disabled and only create trusted administrator accounts. For stricter multi-user deployments, change the write policy to check an explicit admin role in Supabase JWT app metadata.
 
-Clicking **Save changes** writes straight to the database and is live for
-every visitor immediately. Use **Export JSON backup** occasionally to keep an
-offline copy, and **Import JSON** to restore from one.
+## Important launch checks
 
-**Security model:** content is publicly readable (it's a public homepage) but
-only writable by a signed-in Supabase account, enforced by Postgres Row Level
-Security — not by anything in the browser. The anon key in
-`supabase-config.js` is designed to be public and safe to commit; never put a
-Supabase *service_role* key here.
+- Replace all illustrative people, sample client comments, office details, email and phone with verified, approved information.
+- Confirm the correct legal entity, regulatory status, office addresses and any professional claims before publishing.
+- Configure a real secure enquiry endpoint before collecting enquiries. The current form prepares an email draft only when a verified recipient email is entered in the admin studio; it is not a secure case-management system.
+- Replace placeholder images and ensure you have rights to use all images.
+- Link privacy, complaints, accessibility and other legal pages to real documents.
+- Verify the live Supabase project and permissions in the target hosting environment; this archive cannot independently confirm remote database availability or deployment state.
 
-## Before going live
+## Project files
 
-1. **Supabase setup.** Complete the steps above — the site falls back to
-   placeholder content until it is connected.
-2. **Enquiry form.** Wired for Formspree. In `/admin/` under **URL key and
-   destinations**, replace `https://formspree.io/f/YOUR_FORM_ID` with your
-   real Formspree endpoint.
-3. **Contact and regulatory details.** Everything marked `TODO` — address,
-   phone, email, and the footer's regulatory notice (LLP/company number, SRA
-   number) — needs replacing with real, verified details before publishing.
-   The same placeholders also appear in the JSON-LD block in `index.html`
-   `<head>`, used by search engines — update that too.
-4. **Legal links.** Privacy notice, Complaints procedure and Accessibility
-   currently point to `#`. Link them to real pages.
-5. **Images.** Photos load from Unsplash and are placeholders. Replace with
-   real photography.
-6. **People and client comments.** Names, roles, and testimonials are
-   illustrative. Replace with genuine, approved content, and check it meets
-   SRA rules on client comments before publishing.
-
-## Editing tips
-
-- Colours and fonts live in the `:root` block at the top of `styles.css`.
-- Layout changes at 960px (tablet and mobile) and 600px (small phones).
-- The hero photograph is designed to bleed to the right edge of the screen on desktop.
-
-
-## NorthmereLegal brand and launch notes
-
-The site has been rebranded to NorthmereLegal with a refined forest-green, warm ivory and brass visual system. The `CNAME` file is set to `northmerelegal.com`; confirm the domain is acquired and DNS is configured before launch. Review all office locations, regulatory statements, contact details, team biographies, testimonials, and practice-area descriptions for accuracy before launch.
-
-
-## Editing everything in /admin/
-
-All homepage text, labels, links and lists are editable. Practice areas (and their bullet lists), trust items, client quotes, partners, contact steps, form dropdown options and footer links can be added, removed and reordered with the buttons on each card. Images are set by URL in the **URL key** section. The page structure, colours and fonts remain in `index.html` and `styles.css`.
+- `index.html` — public homepage and responsive design
+- `admin/index.html` — authenticated content studio
+- `assets/js/site-content.js` — default editable content model
+- `assets/js/content.js` — homepage renderer and Supabase live-content loader
+- `assets/js/admin.js` — editor, authentication, persistence, import/export
+- `assets/js/supabase-config.js` — public Supabase project configuration
+- `supabase/setup.sql` — database table and row-level security policies
