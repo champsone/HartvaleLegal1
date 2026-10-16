@@ -1,4 +1,4 @@
--- HartvaleLegal | Supabase setup
+-- NorthmereLegal | Supabase setup
 -- Run this once in your Supabase project's SQL Editor (Dashboard -> SQL Editor -> New query -> Run).
 -- It creates a single-row table that stores the whole homepage content model as JSON,
 -- and sets up Row Level Security so that:
