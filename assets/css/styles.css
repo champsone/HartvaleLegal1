@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Ashford Vale | Stylesheet
+   NorthmereLegal | Stylesheet
    1. Tokens      4. Components        7. Responsive (narrow desktop windows)
    2. Base        5. Sections
    3. Layout      6. Motion
@@ -705,4 +705,99 @@ body { background: var(--paper); color: var(--ink); line-height: 1.72; }
   .contact-points { grid-template-columns:1fr; gap:14px; }
   .lead-form { padding:24px 20px; }
   .footer-top { align-items:flex-start; }
+}
+
+/* ==========================================================================
+   Law-firm standard refinement layer
+   Restraint, hierarchy and legibility: tighter measure, quiet hairlines,
+   numbered practice index, consistent imagery treatment, accessible states.
+   ========================================================================== */
+[hidden] { display: none !important; }
+
+body { font-feature-settings: "kern", "liga", "onum"; text-rendering: optimizeLegibility; }
+h1, h2, h3 { font-optical-sizing: auto; font-variation-settings: "opsz" 72; }
+.wrap p, .lede { hanging-punctuation: first; }
+
+/* Header: calmer, with a single brass hairline on scroll */
+.site-header { background: rgba(255, 253, 248, .96); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.site-header.scrolled { border-bottom-color: rgba(164, 133, 77, .55); box-shadow: 0 1px 0 rgba(164, 133, 77, .25), 0 14px 32px rgba(13, 40, 34, .06); }
+.navlinks a:not(.btn) { font-size: .9rem; letter-spacing: .02em; }
+.navlinks a:not(.btn).active { color: var(--navy); }
+.brand:hover .mark { background: var(--navy); color: var(--gold); }
+.mark { transition: background .3s, color .3s; }
+
+/* Hero: unify imagery treatment and add a quiet credential line */
+.hero h1 { max-width: 9ch; }
+.hero-media { border-radius: 2px 2px 2px 64px; }
+.hero-media img, .lead-portrait img, .roster img { filter: saturate(.6) contrast(1.04) brightness(.98); }
+.hero-media figcaption { font-style: italic; border-left-width: 3px; }
+
+/* Trust band: small-caps labels, hairline dividers */
+.trust li strong { letter-spacing: .01em; }
+.trust li span { display: block; letter-spacing: .02em; }
+
+/* Practice areas: numbered index, steadier card rhythm */
+.practice-grid { counter-reset: area; gap: clamp(16px, 2vw, 28px); }
+.practice { counter-increment: area; padding-top: clamp(34px, 3.4vw, 46px); }
+.practice::after {
+  content: counter(area, decimal-leading-zero);
+  position: absolute; top: 22px; right: 28px;
+  color: rgba(164, 133, 77, .55);
+  font: 500 .78rem/1 var(--sans); letter-spacing: .18em;
+}
+.practice li { border-bottom-color: #e6e1d5; }
+.practice .textlink { font-size: .9rem; letter-spacing: .02em; }
+.practice .textlink::after { content: " \2192"; transition: margin-left .25s var(--ease); }
+.practice .textlink:hover::after { margin-left: 4px; }
+
+/* Client comments: more air, quieter quote marks */
+.lead-quote blockquote { max-width: 26em; }
+.quotes-grid figure:nth-child(2) { margin-top: 40px; }
+.quotes-grid figure:nth-child(3) { margin-top: 80px; }
+
+/* People */
+.roster li { transition: background .25s, padding-left .3s var(--ease); }
+.roster li:hover { padding-left: 20px; }
+.roster a { text-decoration: none; border-bottom: 1px solid var(--gold-deep); padding-bottom: 2px; }
+.roster a:hover { color: var(--navy); }
+.standard blockquote { text-wrap: balance; }
+
+/* Contact: legible details and form states */
+.details { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 32px; border-top: 1px solid rgba(217, 194, 143, .28); }
+.details dt { color: var(--gold); font: 600 .72rem/1.4 var(--sans); letter-spacing: .16em; text-transform: uppercase; }
+.details dd { color: #e4ece6; }
+.details a { color: #fff8e9; }
+.lead-form::before { font-weight: 600; }
+.field label { letter-spacing: .01em; }
+.field input:hover, .field select:hover, .field textarea:hover { border-color: var(--gold-deep); }
+.field.invalid input, .field.invalid select, .field.invalid textarea { border-color: #ffb4a8; box-shadow: 0 0 0 1px #ffb4a8; }
+.error { color: #ffc9c0; }
+.consent a { color: var(--gold); text-underline-offset: 3px; }
+.btn:disabled { opacity: .65; cursor: progress; transform: none; }
+.btn:focus-visible { outline-offset: 4px; }
+
+/* Footer */
+.footer a:hover { text-decoration-color: var(--gold); text-underline-offset: 4px; }
+.footer .reg { max-width: 90ch; }
+
+/* Accessibility and media */
+@media (forced-colors: active) {
+  .btn, .practice, .lead-form { border: 1px solid CanvasText; }
+  .hero-media figcaption { background: Canvas; color: CanvasText; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal { opacity: 1 !important; transform: none !important; }
+  .hero-copy > *, .hero-media { animation: none !important; }
+}
+@media (max-width: 960px) {
+  .practice::after { top: 18px; right: 22px; }
+  .quotes-grid figure:nth-child(2), .quotes-grid figure:nth-child(3) { margin-top: 0; }
+  .details { grid-template-columns: minmax(0, 1fr); }
+}
+@media print {
+  .topline, .site-header, .hero-media, .lead-form, .menu-toggle, .skip { display: none !important; }
+  body, .clients, .contact, .people, .trust, .footer { background: #fff !important; color: #000 !important; }
+  .clients *, .contact *, .trust *, .footer * { color: #000 !important; }
+  .js .reveal { opacity: 1 !important; transform: none !important; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .8em; }
 }
