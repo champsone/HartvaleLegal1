@@ -13,9 +13,6 @@
     },
     brand: { name: "NorthmereLegal", descriptor: "Solicitors", mark: "N" },
     header: {
-      strapline: "Clear, considered legal advice in London, Oxford and Edinburgh",
-      phoneDisplay: "Thoughtful counsel. Clear next steps.",
-      phoneHref: "#contact",
       nav: { work: "Our work", workUrl: "#practice", clients: "Clients", clientsUrl: "#clients", people: "Our people", peopleUrl: "#people", cta: "Start a conversation", ctaUrl: "#contact" }
     },
     hero: {
@@ -35,10 +32,11 @@
       { title: "Partner-led", detail: "Senior lawyers on every matter" },
       { title: "Discreet", detail: "Careful handling of sensitive matters" }
     ],
+    practiceSection: { title: "Sound advice for important decisions.", intro: "We help clients understand their position, assess their options and move forward with confidence." },
     practice: [
-      { title: "Private wealth and family", description: "Practical advice on wealth, succession and family arrangements, handled with discretion and care.", items: ["Wills, trusts and estate planning", "Succession and inheritance disputes", "Divorce and financial remedies", "Family business and wealth structuring"], linkLabel: "Discuss a private matter", linkUrl: "#contact" },
-      { title: "Property and the built world", description: "Commercial guidance for acquisitions, development, investment and the places clients are responsible for.", items: ["Acquisitions and disposals", "Development and construction", "Landlord and tenant", "Heritage and listed buildings"], linkLabel: "Discuss a property matter", linkUrl: "#contact" },
-      { title: "Business and disputes", description: "Clear strategic advice for businesses facing change, disagreement or a decision with lasting consequences.", items: ["Commercial contracts and governance", "Shareholder and partnership disputes", "Litigation and arbitration", "Employment and senior executive matters"], linkLabel: "Discuss a business matter", linkUrl: "#contact" }
+      { icon: "person", title: "Private wealth and family", description: "Practical advice on wealth, succession and family arrangements, handled with discretion and care.", items: ["Wills, trusts and estate planning", "Succession and inheritance disputes", "Divorce and financial remedies", "Family business and wealth structuring"], linkLabel: "Discuss a private matter", linkUrl: "#contact" },
+      { icon: "building", title: "Property and the built world", description: "Commercial guidance for acquisitions, development, investment and the places clients are responsible for.", items: ["Acquisitions and disposals", "Development and construction", "Landlord and tenant", "Heritage and listed buildings"], linkLabel: "Discuss a property matter", linkUrl: "#contact" },
+      { icon: "scales", title: "Business and disputes", description: "Clear strategic advice for businesses facing change, disagreement or a decision with lasting consequences.", items: ["Commercial contracts and governance", "Shareholder and partnership disputes", "Litigation and arbitration", "Employment and senior executive matters"], linkLabel: "Discuss a business matter", linkUrl: "#contact" }
     ],
     clients: {
       title: "What clients say.",
@@ -54,6 +52,7 @@
       finePrint: "Illustrative client comments written for this concept site."
     },
     people: {
+      rosterTitle: "Our partners",
       title: "Advice from senior lawyers.",
       intro: "Every matter is led by a partner, so you always know who is responsible for your advice.",
       lead: {
@@ -69,6 +68,17 @@
     contact: {
       title: "Find the right way forward.",
       lede: "Tell us briefly what you are dealing with. We will review your enquiry and come back to you with a sensible next step.",
+      assuranceTitle: "A considered first step",
+      assuranceText: "Share only a brief outline. Please do not include confidential documents or urgent deadlines in this initial message.",
+      steps: [
+        { title: "We listen first", text: "Understand the issue before discussing options." },
+        { title: "Clear next steps", text: "Know what information may be needed next." }
+      ],
+      labels: { address: "London", direct: "Direct", offices: "Other offices", hours: "Availability" },
+      formLabel: "Initial enquiry",
+      submitLabel: "Send enquiry",
+      matterPlaceholder: "Select a practice",
+      matterOptions: ["Private wealth and family", "Property and the built world", "Business and disputes", "General enquiry"],
       london: "",
       email: "",
       emailHref: "",
@@ -86,9 +96,17 @@
     footer: {
       legal: "This is a design concept. Verify all firm, regulatory and contact details before publication.",
       copyright: "Concept website. Names and sample comments are illustrative.",
-      privacyUrl: "#contact",
-      complaintsUrl: "#contact",
-      accessibilityUrl: "#main"
+      links: [
+        { label: "Our work", url: "#practice" },
+        { label: "Clients", url: "#clients" },
+        { label: "Our people", url: "#people" },
+        { label: "Contact", url: "#contact" }
+      ],
+      legalLinks: [
+        { label: "Privacy information", url: "#contact" },
+        { label: "Complaints information", url: "#contact" },
+        { label: "Accessibility statement", url: "#main" }
+      ]
     }
   };
 })();

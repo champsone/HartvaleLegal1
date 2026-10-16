@@ -166,7 +166,7 @@
       })
       .then(function () {
         submit.disabled = false;
-        submit.textContent = "Send enquiry";
+        submit.textContent = (contactContent.submitLabel || "Send enquiry");
       });
   });
 })();

@@ -45,79 +45,127 @@
   function repeatCard(title, body) { return '<article class="repeat-card"><h3>' + esc(title) + '</h3>' + grid(body) + "</article>"; }
   function repeatGrid(cards) { return '<div class="repeat-grid">' + cards.join("") + "</div>"; }
 
+  var TEMPLATES = {
+    trust: { title: "", detail: "" },
+    practice: { icon: "person", title: "New practice area", description: "", items: [""], linkLabel: "Discuss a matter", linkUrl: "#contact" },
+    quote: { quote: "", attribution: "", detail: "" },
+    partner: { name: "New partner", focus: "", email: "", imageUrl: "", imageAlt: "" },
+    step: { title: "", text: "" },
+    link: { label: "", url: "#" },
+    text: ""
+  };
+  function selectField(label, path, options) {
+    var value = getPath(state, path);
+    var opts = options.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (o[0] === value ? " selected" : "") + ">" + esc(o[1]) + "</option>"; }).join("");
+    return '<div class="field"><label for="' + pathId(path) + '">' + esc(label) + '</label><select id="' + pathId(path) + '" data-path="' + path + '" data-kind="select">' + opts + "</select></div>";
+  }
+  function tools(list, i, len) {
+    return '<div class="card-tools">' +
+      '<button type="button" class="btn btn--quiet btn--tiny" data-act="up" data-list="' + list + '" data-index="' + i + '"' + (i === 0 ? " disabled" : "") + ' aria-label="Move up">&uarr;</button>' +
+      '<button type="button" class="btn btn--quiet btn--tiny" data-act="down" data-list="' + list + '" data-index="' + i + '"' + (i === len - 1 ? " disabled" : "") + ' aria-label="Move down">&darr;</button>' +
+      '<button type="button" class="btn btn--danger btn--tiny" data-act="remove" data-list="' + list + '" data-index="' + i + '">Remove</button></div>';
+  }
+  function addButton(list, tpl, label) { return '<p><button type="button" class="btn btn--quiet" data-act="add" data-list="' + list + '" data-tpl="' + tpl + '">+ ' + esc(label) + "</button></p>"; }
+  function listCard(list, i, len, title, body) { return '<article class="repeat-card"><div class="card-head"><h3>' + esc(title) + "</h3>" + tools(list, i, len) + "</div>" + grid(body) + "</article>"; }
+  function stringList(label, list) {
+    var items = getPath(state, list) || [];
+    var rows = items.map(function (_, j) {
+      return '<div class="string-row">' + field(label + " " + (j + 1), list + "." + j) + '<button type="button" class="btn btn--danger btn--tiny" data-act="remove" data-list="' + list + '" data-index="' + j + '">Remove</button></div>';
+    }).join("");
+    return '<div class="field full">' + rows + addButton(list, "text", "Add " + label.toLowerCase()) + "</div>";
+  }
+
   function render() {
-    var trustCards = state.trust.map(function (item, i) { return repeatCard("Trust item " + (i + 1), [field("Title", "trust." + i + ".title"), field("Detail", "trust." + i + ".detail")]); });
+    var trustCards = state.trust.map(function (item, i) { return listCard("trust", i, state.trust.length, "Trust item " + (i + 1), [field("Title", "trust." + i + ".title"), field("Detail", "trust." + i + ".detail")]); });
     var practiceCards = state.practice.map(function (item, i) {
-      var fields = [field("Practice title", "practice." + i + ".title"), field("Description", "practice." + i + ".description", "textarea", "Short paragraph shown on the homepage.", true)];
-      item.items.forEach(function (entry, j) { fields.push(field("List item " + (j + 1), "practice." + i + ".items." + j)); });
-      fields.push(field("Button label", "practice." + i + ".linkLabel"));
-      return repeatCard("Practice area " + (i + 1), fields);
+      var fields = [field("Practice title", "practice." + i + ".title"), selectField("Icon", "practice." + i + ".icon", [["person", "Person and family"], ["building", "Building and property"], ["scales", "Scales and disputes"]]), field("Description", "practice." + i + ".description", "textarea", "Short paragraph shown on the homepage.", true), stringList("List item", "practice." + i + ".items"), field("Button label", "practice." + i + ".linkLabel")];
+      return listCard("practice", i, state.practice.length, "Practice area " + (i + 1), fields);
     });
-    var quoteCards = state.clients.quotes.map(function (item, i) { return repeatCard("Quote " + (i + 1), [field("Quote", "clients.quotes." + i + ".quote", "textarea", "Use an approved client comment only.", true), field("Attribution", "clients.quotes." + i + ".attribution"), field("Matter detail", "clients.quotes." + i + ".detail")]); });
-    var partnerCards = state.people.partners.map(function (item, i) { return repeatCard("Partner " + (i + 1), [field("Name", "people.partners." + i + ".name"), field("Focus", "people.partners." + i + ".focus"), field("Email", "people.partners." + i + ".email", "email"), field("Portrait alt text", "people.partners." + i + ".imageAlt")]); });
+    var quoteCards = state.clients.quotes.map(function (item, i) { return listCard("clients.quotes", i, state.clients.quotes.length, "Quote " + (i + 1), [field("Quote", "clients.quotes." + i + ".quote", "textarea", "Use an approved client comment only.", true), field("Attribution", "clients.quotes." + i + ".attribution"), field("Matter detail", "clients.quotes." + i + ".detail")]); });
+    var partnerCards = state.people.partners.map(function (item, i) { return listCard("people.partners", i, state.people.partners.length, "Partner " + (i + 1), [field("Name", "people.partners." + i + ".name"), field("Focus", "people.partners." + i + ".focus"), field("Portrait alt text", "people.partners." + i + ".imageAlt")]); });
+    var stepCards = state.contact.steps.map(function (item, i) { return listCard("contact.steps", i, state.contact.steps.length, "Step " + (i + 1), [field("Title", "contact.steps." + i + ".title"), field("Text", "contact.steps." + i + ".text", "textarea")]); });
+    var footerLinks = state.footer.links.map(function (item, i) { return listCard("footer.links", i, state.footer.links.length, "Footer link " + (i + 1), [field("Label", "footer.links." + i + ".label"), field("URL", "footer.links." + i + ".url", "url")]); });
+    var legalLinks = state.footer.legalLinks.map(function (item, i) { return listCard("footer.legalLinks", i, state.footer.legalLinks.length, "Legal link " + (i + 1), [field("Label", "footer.legalLinks." + i + ".label"), field("URL", "footer.legalLinks." + i + ".url", "url", "Relative path or full URL.")]); });
     var urls = [
       ["Work navigation URL", "header.nav.workUrl", "Destination for the Our work navigation link."],
       ["Clients navigation URL", "header.nav.clientsUrl", "Destination for the Clients navigation link."],
       ["People navigation URL", "header.nav.peopleUrl", "Destination for the Our people navigation link."],
       ["Header button URL", "header.nav.ctaUrl", "Destination for the header call to action."],
-      ["Header phone URL", "header.phoneHref", "Use a tel: URL for a phone link."],
       ["Hero primary button", "hero.primaryUrl", "Use #contact, a page path, or a full https:// URL."],
       ["Hero secondary button", "hero.secondaryUrl", "Destination for the secondary hero action."],
-      ["Hero image URL", "hero.imageUrl", "Use a relative GitHub asset path for a self-contained site."],
-      ["Lead contact URL or email", "people.lead.email", "Use a mailto email, an internal path, or a full https:// URL."],
+      ["Hero image URL", "hero.imageUrl", "Full https:// image address, or a path to an image in the repository."],
+      ["Lead contact URL or email", "people.lead.email", "Use an email address, an internal path, or a full https:// URL."],
       ["Lead partner image URL", "people.lead.imageUrl", "Portrait source used in the people section."],
-      ["Contact email URL", "contact.emailHref", "Destination for the displayed contact email."],
-      ["Contact phone URL", "contact.phoneHref", "Use a tel: URL for the displayed contact phone."],
+      ["Contact email URL", "contact.emailHref", "Optional. Leave blank to link the displayed email automatically."],
+      ["Contact phone URL", "contact.phoneHref", "Optional. Leave blank to link the displayed phone automatically."],
       ["Formspree endpoint URL", "contact.formAction", "Paste the full URL from Formspree, for example https://formspree.io/f/abc12345."],
-      ["Contact privacy link", "contact.privacyUrl", "Relative path or full URL."],
-      ["Footer privacy link", "footer.privacyUrl", "Relative path or full URL."],
-      ["Footer complaints link", "footer.complaintsUrl", "Relative path or full URL."],
-      ["Footer accessibility link", "footer.accessibilityUrl", "Relative path or full URL."]
+      ["Contact privacy link", "contact.privacyUrl", "Relative path or full URL."]
     ];
     state.practice.forEach(function (item, i) { urls.push(["Practice area " + (i + 1) + " button URL", "practice." + i + ".linkUrl", "Destination for this practice card button."]); });
     state.people.partners.forEach(function (item, i) {
-      urls.push([item.name + " contact URL or email", "people.partners." + i + ".email", "Use a mailto email, an internal path, or a full https:// URL."]);
-      urls.push([item.name + " image URL", "people.partners." + i + ".imageUrl", "Partner portrait source."]);
+      urls.push([(item.name || "Partner " + (i + 1)) + " contact URL or email", "people.partners." + i + ".email", "Use an email address, an internal path, or a full https:// URL."]);
+      urls.push([(item.name || "Partner " + (i + 1)) + " image URL", "people.partners." + i + ".imageUrl", "Partner portrait source."]);
     });
     var urlRows = urls.map(function (entry) { return '<div class="url-row"><div><strong>' + esc(entry[0]) + '</strong><span>' + esc(entry[1]) + '</span></div><div>' + field(entry[0], entry[1], "url", entry[2], true) + "</div></div>"; });
 
     editor.innerHTML =
-      section("Site and navigation", "Control browser metadata, the firm identity, top line, phone number, and navigation labels.", grid([
+      section("Site and navigation", "Browser metadata, firm identity and navigation labels.", grid([
         field("Browser title", "meta.title", "textarea", "Shown in the browser tab and search results.", true),
         field("Meta description", "meta.description", "textarea", "Short search description.", true),
         field("Social title", "meta.ogTitle"), field("Social description", "meta.ogDescription", "textarea"),
         field("Firm name", "brand.name"), field("Descriptor", "brand.descriptor"), field("Logo letter", "brand.mark"),
-        field("Top line message", "header.strapline", "textarea", "Message above the navigation.", true),
-        field("Phone display", "header.phoneDisplay"), field("Work navigation label", "header.nav.work"),
+        field("Work navigation label", "header.nav.work"),
         field("Clients navigation label", "header.nav.clients"), field("People navigation label", "header.nav.people"), field("Header button label", "header.nav.cta")
       ])) +
-      section("Hero", "Edit the first screen visitors see. Button destinations and the image URL live in the URL key below.", grid([
+      section("Hero", "The first screen visitors see. Button destinations and the image URL are in the URL key below.", grid([
         field("Headline", "hero.title", "textarea", "Keep this concise for the visual layout.", true), field("Intro text", "hero.lede", "textarea", "The paragraph below the headline.", true),
         field("Primary button label", "hero.primaryLabel"), field("Secondary button label", "hero.secondaryLabel"),
         field("Image alt text", "hero.imageAlt", "textarea", "Describe the image for accessibility.", true), field("Image caption", "hero.caption")
       ])) +
-      section("Trust strip", "Four credibility statements displayed below the hero.", repeatGrid(trustCards)) +
-      section("Practice areas", "Edit each practice card, its list, and its button label. Use the URL key to change destinations.", repeatGrid(practiceCards)) +
-      section("Client proof", "Edit the client-facing introduction and approved testimonial copy.", grid([
+      section("Trust strip", "Credibility statements shown below the hero. Add, remove and reorder as needed.", repeatGrid(trustCards) + addButton("trust", "trust", "Add trust item")) +
+      section("Practice areas", "Section heading, then each practice card with its own list and button.", grid([field("Section title", "practiceSection.title"), field("Section intro", "practiceSection.intro", "textarea", "", true)]) + repeatGrid(practiceCards) + addButton("practice", "practice", "Add practice area")) +
+      section("Client proof", "Introduction and approved testimonial copy.", grid([
         field("Section title", "clients.title"), field("Section intro", "clients.intro", "textarea", "", true),
         field("Lead quote", "clients.leadQuote", "textarea", "Use approved wording only.", true), field("Lead attribution", "clients.leadAttribution"), field("Lead matter detail", "clients.leadDetail"), field("Disclosure note", "clients.finePrint", "textarea", "Keep any required legal disclosure.", true)
-      ]) + repeatGrid(quoteCards)) +
-      section("People", "Update the lead partner and partner roster. Email and image destinations are also listed in the URL key.", grid([
+      ]) + repeatGrid(quoteCards) + addButton("clients.quotes", "quote", "Add quote")) +
+      section("People", "Lead partner and partner roster. Email and image addresses are in the URL key.", grid([
         field("Section title", "people.title"), field("Section intro", "people.intro", "textarea", "", true),
         field("Lead name", "people.lead.name"), field("Lead role", "people.lead.role"), field("Lead biography", "people.lead.bio", "textarea", "", true),
         field("Lead focus", "people.lead.focus"), field("Lead base", "people.lead.based"), field("Portrait alt text", "people.lead.imageAlt"),
-        field("Lead button label", "people.lead.buttonLabel"), field("Lead quote", "people.lead.quote", "textarea", "", true), field("Quote attribution", "people.lead.quoteAttribution", "text", "", true)
-      ]) + repeatGrid(partnerCards)) +
-      section("Contact and enquiry", "Edit office details, the Formspree enquiry destination, and the thank-you message shown after a successful submission.", grid([
-        field("Section title", "contact.title"), field("Intro", "contact.lede", "textarea", "", true), field("London address", "contact.london", "textarea"), field("Email", "contact.email", "email"), field("Phone", "contact.phone"), field("Other offices", "contact.otherOffices", "textarea"), field("Availability", "contact.availability", "textarea"), field("Form subject", "contact.formSubject"), field("Thank-you note", "contact.successMessage", "textarea", "Shown after Formspree accepts the enquiry.", true), field("Error note", "contact.errorMessage", "textarea", "Shown if the submission fails.", true), field("Privacy link text", "contact.privacyLabel")
-      ])) +
-      section("Footer", "Replace regulatory, copyright, and legal-link text before publishing.", grid([
+        field("Lead button label", "people.lead.buttonLabel"), field("Lead quote", "people.lead.quote", "textarea", "", true), field("Quote attribution", "people.lead.quoteAttribution", "text", "", true),
+        field("Roster heading", "people.rosterTitle")
+      ]) + repeatGrid(partnerCards) + addButton("people.partners", "partner", "Add partner")) +
+      section("Contact and enquiry", "Office details, reassurance text, the enquiry form and its messages.", grid([
+        field("Section title", "contact.title"), field("Intro", "contact.lede", "textarea", "", true),
+        field("Reassurance heading", "contact.assuranceTitle"), field("Reassurance text", "contact.assuranceText", "textarea", "", true),
+        field("Address label", "contact.labels.address"), field("London address", "contact.london", "textarea"),
+        field("Direct label", "contact.labels.direct"), field("Email", "contact.email", "email"), field("Phone", "contact.phone"),
+        field("Offices label", "contact.labels.offices"), field("Other offices", "contact.otherOffices", "textarea"),
+        field("Availability label", "contact.labels.hours"), field("Availability", "contact.availability", "textarea"),
+        field("Form heading", "contact.formLabel"), field("Form email subject", "contact.formSubject"), field("Send button label", "contact.submitLabel"),
+        field("Dropdown placeholder", "contact.matterPlaceholder"), stringList("Dropdown option", "contact.matterOptions"),
+        field("Thank-you note", "contact.successMessage", "textarea", "Shown after the enquiry is accepted.", true), field("Error note", "contact.errorMessage", "textarea", "Shown if the submission fails.", true), field("Privacy link text", "contact.privacyLabel")
+      ]) + repeatGrid(stepCards) + addButton("contact.steps", "step", "Add step")) +
+      section("Footer", "Regulatory text, copyright and footer links.", grid([
         field("Regulatory text", "footer.legal", "textarea", "Confirm this with the firm before launch.", true), field("Copyright line", "footer.copyright", "textarea", "", true)
-      ])) +
-      section("URL key and destinations", "This is the control room for every homepage button, image source, email destination, form target, and legal link.", urlRows.join(""), "url-key");
+      ]) + repeatGrid(footerLinks) + addButton("footer.links", "link", "Add footer link") + repeatGrid(legalLinks) + addButton("footer.legalLinks", "link", "Add legal link")) +
+      section("URL key and destinations", "Every button, image source, email destination and form target in one place.", urlRows.join(""), "url-key");
 
     bindFields();
   }
+  editor.addEventListener("click", function (event) {
+    var btn = event.target.closest("[data-act]");
+    if (!btn) return;
+    var list = getPath(state, btn.getAttribute("data-list"));
+    if (!Array.isArray(list)) return;
+    var act = btn.getAttribute("data-act"), i = parseInt(btn.getAttribute("data-index"), 10);
+    if (act === "add") { var tpl = TEMPLATES[btn.getAttribute("data-tpl")]; list.push(clone({ v: tpl }).v); }
+    else if (act === "remove") { if (!window.confirm("Remove this item?")) return; list.splice(i, 1); }
+    else if (act === "up" && i > 0) { list.splice(i - 1, 0, list.splice(i, 1)[0]); }
+    else if (act === "down" && i < list.length - 1) { list.splice(i + 1, 0, list.splice(i, 1)[0]); }
+    var y = window.scrollY; render(); window.scrollTo(0, y);
+    saveStatus.textContent = "Unsaved changes. Press Save changes to publish."; saveStatus.style.color = "var(--muted)";
+  });
   function bindFields() {
     editor.querySelectorAll("[data-path]").forEach(function (el) {
       el.addEventListener("input", function () { setPath(state, el.getAttribute("data-path"), el.value); });
