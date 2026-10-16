@@ -7,22 +7,22 @@
 
 /* 1. Tokens ---------------------------------------------------------------- */
 :root {
-  --ivory: #f4f2ed;
-  --paper: #fbfaf7;
-  --stone: #e6e2db;
-  --ink: #1b2730;
-  --muted: #5e666b;
-  --rule: #d1cec7;
+  --ivory: #f6f4ef;
+  --paper: #fffdfa;
+  --stone: #e5e0d6;
+  --ink: #192923;
+  --muted: #626b65;
+  --rule: #d6d1c6;
 
-  --navy: #1b2b33;
-  --navy-deep: #101a20;
-  --navy-soft: #243942;
+  --navy: #18372f;
+  --navy-deep: #10251f;
+  --navy-soft: #25483e;
 
-  --wine: #642d3d;
-  --wine-hover: #7b4351;
+  --wine: #8a6b3e;
+  --wine-hover: #6d512d;
 
-  --gold: #d4c19c;
-  --gold-deep: #8a7448;
+  --gold: #d8c49a;
+  --gold-deep: #92764a;
 
   --serif: "Newsreader", Georgia, "Times New Roman", serif;
   --sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
