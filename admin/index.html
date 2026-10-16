@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#17262e">
-  <title>HartvaleLegal | Admin</title>
+  <title>Northmere Legal | Admin</title>
   <style>
     :root { --navy:#17262e; --navy-2:#223943; --paper:#f5f3ee; --white:#fff; --ink:#17262e; --muted:#667176; --line:#d8d8d1; --gold:#d4c19c; --wine:#642d3d; --green:#276957; --danger:#a94747; --shadow:0 18px 45px rgba(23,38,46,.12); }
     * { box-sizing:border-box; }
@@ -79,7 +79,7 @@
   <div class="shell">
     <section class="auth" id="auth" aria-labelledby="auth-title">
       <div class="auth-card">
-        <div class="kicker">HartvaleLegal</div>
+        <div class="kicker">Northmere Legal</div>
         <h1 id="auth-title">Content studio</h1>
         <p class="auth-copy" id="auth-copy">Sign in with the admin account created for this site in Supabase.</p>
         <form id="password-form">
@@ -93,7 +93,7 @@
     </section>
 
     <section class="app" id="app">
-      <header class="app-header"><div class="app-header-inner"><div class="admin-brand"><div class="admin-mark">H</div><div><strong>HartvaleLegal</strong><span>Content studio</span></div></div><div class="header-actions"><button class="btn btn--gold" id="save" type="button">Save changes</button><button class="btn btn--quiet" id="preview" type="button">Preview homepage</button><button class="btn btn--quiet" id="export" type="button">Export JSON backup</button><label class="btn btn--quiet" for="import-file">Import JSON</label><input id="import-file" type="file" accept="application/json" hidden><button class="btn btn--quiet" id="lock" type="button">Sign out</button></div></div></header>
+      <header class="app-header"><div class="app-header-inner"><div class="admin-brand"><div class="admin-mark">H</div><div><strong>Northmere Legal</strong><span>Content studio</span></div></div><div class="header-actions"><button class="btn btn--gold" id="save" type="button">Save changes</button><button class="btn btn--quiet" id="preview" type="button">Preview homepage</button><button class="btn btn--quiet" id="export" type="button">Export JSON backup</button><label class="btn btn--quiet" for="import-file">Import JSON</label><input id="import-file" type="file" accept="application/json" hidden><button class="btn btn--quiet" id="lock" type="button">Sign out</button></div></div></header>
       <main class="workspace">
         <div class="workspace-intro"><div><div class="kicker">Homepage control</div><h1>Edit the public site</h1><p>Every field below writes to the same content model used by the homepage. Keep links relative where possible, for example <code>#contact</code> or <code>/privacy/</code>.</p><p class="save-status" id="save-status" role="status" aria-live="polite"></p></div><div class="mode-note"><strong>Live mode</strong><br>Changes save straight to the database and go live for every visitor immediately. Use "Export JSON backup" occasionally so you always have an offline copy.</div></div>
         <div id="editor"></div>
