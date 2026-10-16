@@ -666,7 +666,7 @@ body { background: var(--paper); color: var(--ink); line-height: 1.72; }
 .contact-points span { color:var(--gold); font-size:.76rem; letter-spacing:.16em; }
 .contact-points strong { color:#fff8e9; }
 .lead-form { border:1px solid rgba(217,194,143,.36); border-top:3px solid var(--gold); border-radius:3px; background:rgba(255,255,255,.055); box-shadow:0 24px 54px rgba(0,0,0,.12); }
-.lead-form::before { content:"INITIAL ENQUIRY"; display:block; color:var(--gold); font-size:.72rem; letter-spacing:.19em; margin-bottom:24px; }
+.lead-form::before { content:attr(data-label); text-transform:uppercase; display:block; color:var(--gold); font-size:.72rem; letter-spacing:.19em; margin-bottom:24px; }
 .field { margin-bottom:20px; }
 .field label { color:#fffaf0; font-size:.9rem; }
 .field input,.field select,.field textarea { border-radius:3px; background:#fdfbf5; border:1px solid #c7d0c8; color:#18372e; min-height:52px; }
@@ -795,9 +795,15 @@ h1, h2, h3 { font-optical-sizing: auto; font-variation-settings: "opsz" 72; }
   .details { grid-template-columns: minmax(0, 1fr); }
 }
 @media print {
-  .topline, .site-header, .hero-media, .lead-form, .menu-toggle, .skip { display: none !important; }
+  .site-header, .hero-media, .lead-form, .menu-toggle, .skip { display: none !important; }
   body, .clients, .contact, .people, .trust, .footer { background: #fff !important; color: #000 !important; }
   .clients *, .contact *, .trust *, .footer * { color: #000 !important; }
   .js .reveal { opacity: 1 !important; transform: none !important; }
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .8em; }
+}
+
+/* Fix: base min-height was overriding the mobile reset, forcing the hero
+   image wider than the screen and causing sideways scrolling on phones. */
+@media (max-width: 960px) {
+  .hero-media { min-height: 0; width: 100%; }
 }
