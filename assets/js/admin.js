@@ -1,4 +1,4 @@
-/* Northmere Legal | Admin studio, backed by Supabase
+/* HartvaleLegal | Admin studio, backed by Supabase
    Content is read from and written to a Supabase table. Only a
    signed-in admin account (created in the Supabase dashboard) can save. */
 (function () {
@@ -142,7 +142,7 @@
     var link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = name; link.click();
     setTimeout(function () { URL.revokeObjectURL(link.href); }, 500);
   }
-  function exportJson() { download("northmerelegal-content.json", JSON.stringify(state, null, 2), "application/json"); }
+  function exportJson() { download("hartvalelegal-content.json", JSON.stringify(state, null, 2), "application/json"); }
   async function showApp() {
     document.getElementById("auth").style.display = "none";
     document.getElementById("app").classList.add("is-visible");
@@ -189,7 +189,7 @@
   });
   document.getElementById("import-file").addEventListener("change", function (event) {
     var file = event.target.files[0]; if (!file) return;
-    var reader = new FileReader(); reader.onload = function () { try { var imported = JSON.parse(reader.result); if (imported.version !== defaults.version) throw new Error("version"); state = merge(clone(defaults), imported); render(); saveStatus.textContent = "Imported. Review the fields, then save changes to publish."; saveStatus.style.color = "var(--green)"; } catch (error) { saveStatus.textContent = "That file is not a compatible Northmere Legal content export."; saveStatus.style.color = "var(--danger)"; } };
+    var reader = new FileReader(); reader.onload = function () { try { var imported = JSON.parse(reader.result); if (imported.version !== defaults.version) throw new Error("version"); state = merge(clone(defaults), imported); render(); saveStatus.textContent = "Imported. Review the fields, then save changes to publish."; saveStatus.style.color = "var(--green)"; } catch (error) { saveStatus.textContent = "That file is not a compatible HartvaleLegal content export."; saveStatus.style.color = "var(--danger)"; } };
     reader.readAsText(file); event.target.value = "";
   });
 

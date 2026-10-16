@@ -126,8 +126,8 @@
     var successMessage = contactContent.successMessage || "Thank you. Your enquiry has been sent.";
     var errorMessage = contactContent.errorMessage || "We could not send your enquiry. Please try again or email us directly.";
 
-    if (endpoint.indexOf("YOUR_FORM_ID") !== -1) {
-      status.textContent = "Add your Formspree form URL in Admin > URL key and destinations before publishing.";
+    if (!endpoint || endpoint.indexOf("YOUR_FORM_ID") !== -1) {
+      status.textContent = "This enquiry form is not connected to a secure intake service yet. Please configure and test the firm's verified submission endpoint before launch. No information has been sent.";
       return;
     }
 

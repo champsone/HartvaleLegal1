@@ -1,4 +1,4 @@
-/* Northmere Legal | Homepage content renderer */
+/* HartvaleLegal | Homepage content renderer */
 (function () {
   "use strict";
 
@@ -197,7 +197,7 @@
   if (legalLinks[2]) legalLinks[2].href = safeUrl(content.footer.accessibilityUrl);
 
   window.__HARTVALE_CONTENT__ = content;
-  window.dispatchEvent(new CustomEvent("northmerelegal:content-ready"));
+  window.dispatchEvent(new CustomEvent("hartvalelegal:content-ready"));
   }
 
   async function init() {
