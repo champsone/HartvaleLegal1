@@ -231,6 +231,11 @@
   document.getElementById("save").addEventListener("click", save);
   document.getElementById("preview").addEventListener("click", function () { window.open(new URL("../", window.location.href).href, "_blank", "noopener"); });
   document.getElementById("export").addEventListener("click", exportJson);
+  document.getElementById("reset").addEventListener("click", function () {
+    if (!window.confirm("Replace everything in the editor with the built-in defaults? Nothing goes live until you press Save changes.")) return;
+    state = clone(defaults); render();
+    saveStatus.textContent = "Defaults loaded. Review, then press Save changes to publish."; saveStatus.style.color = "var(--muted)";
+  });
   document.getElementById("lock").addEventListener("click", async function () {
     if (client) { try { await client.auth.signOut(); } catch (error) { /* ignore */ } }
     showAuth();
