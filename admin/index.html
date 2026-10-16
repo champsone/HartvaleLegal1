@@ -103,15 +103,15 @@
     <section class="app" id="app">
       <header class="app-header"><div class="app-header-inner"><div class="admin-brand"><div class="admin-mark">N</div><div><strong>NorthmereLegal</strong><span>Content studio</span></div></div><div class="header-actions"><button class="btn btn--gold" id="save" type="button">Save changes</button><button class="btn btn--quiet" id="preview" type="button">Preview homepage</button><button class="btn btn--quiet" id="reset" type="button">Reset to defaults</button><button class="btn btn--quiet" id="export" type="button">Export JSON backup</button><label class="btn btn--quiet" for="import-file">Import JSON</label><input id="import-file" type="file" accept="application/json" hidden><button class="btn btn--quiet" id="lock" type="button">Sign out</button></div></div></header>
       <main class="workspace">
-        <div class="workspace-intro"><div><div class="kicker">Homepage control</div><h1>Edit the public site</h1><p>Every field below writes to the same content model used by the homepage. Add, remove and reorder items with the buttons on each card. Keep links relative where possible, for example <code>#contact</code> or <code>/privacy/</code>.</p><p class="save-status" id="save-status" role="status" aria-live="polite"></p></div><div class="mode-note"><strong>Live mode</strong> <span class="muted">(admin build v7)</span><br>Changes save straight to the database and go live for every visitor immediately. Use "Export JSON backup" occasionally so you always have an offline copy.</div></div>
+        <div class="workspace-intro"><div><div class="kicker">Homepage control</div><h1>Edit the public site</h1><p>Every field below writes to the same content model used by the homepage. Add, remove and reorder items with the buttons on each card. Keep links relative where possible, for example <code>#contact</code> or <code>/privacy/</code>.</p><p class="save-status" id="save-status" role="status" aria-live="polite"></p></div><div class="mode-note"><strong>Live mode</strong> <span class="muted">(admin build v8)</span><br>Changes save straight to the database and go live for every visitor immediately. Use "Export JSON backup" occasionally so you always have an offline copy.</div></div>
         <div id="editor"></div>
         <p class="footer-note">Content is stored in your Supabase project and is only editable by a signed-in admin account (managed from your Supabase dashboard, not from this page). The public enquiry form opens an email draft to the address set under Contact; connect a secure form service before launch.</p>
       </main>
     </section>
   </div>
-  <script src="../assets/js/site-content.js?v=7"></script>
+  <script src="../assets/js/site-content.js?v=8"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="../assets/js/supabase-config.js?v=7"></script>
-  <script src="../assets/js/admin.js?v=7"></script>
+  <script src="../assets/js/supabase-config.js?v=8"></script>
+  <script src="../assets/js/admin.js?v=8"></script>
 </body>
 </html>
