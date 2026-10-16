@@ -122,7 +122,7 @@
 
     var endpoint = form.getAttribute("action");
     var submit = form.querySelector('button[type="submit"]');
-    var contactContent = window.__HARTVALE_CONTENT__ && window.__HARTVALE_CONTENT__.contact || {};
+    var contactContent = window.__NORTHMERE_CONTENT__ && window.__NORTHMERE_CONTENT__.contact || {};
     var successMessage = contactContent.successMessage || "Thank you. Your enquiry has been sent.";
     var errorMessage = contactContent.errorMessage || "We could not send your enquiry. Please try again or email us directly.";
 

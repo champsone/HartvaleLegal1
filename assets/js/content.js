@@ -183,6 +183,12 @@
   }
   if (detailBlocks[2]) multiline(detailBlocks[2].querySelector("dd"), content.contact.otherOffices);
   if (detailBlocks[3]) multiline(detailBlocks[3].querySelector("dd"), content.contact.availability);
+  document.querySelectorAll(".details > div").forEach(function (block) {
+    var dd = block.querySelector("dd");
+    block.hidden = !(dd && dd.textContent.trim());
+  });
+  var detailList = document.querySelector(".details");
+  if (detailList) detailList.hidden = !detailList.querySelector("div:not([hidden])");
   var form = document.getElementById("lead-form");
   if (form) { form.action = safeUrl(content.contact.formAction, form.action); var subject = form.querySelector('[name="_subject"]'); if (subject) subject.value = content.contact.formSubject; }
   var privacy = document.querySelector(".consent a");
@@ -196,7 +202,7 @@
   if (legalLinks[1]) legalLinks[1].href = safeUrl(content.footer.complaintsUrl);
   if (legalLinks[2]) legalLinks[2].href = safeUrl(content.footer.accessibilityUrl);
 
-  window.__HARTVALE_CONTENT__ = content;
+  window.__NORTHMERE_CONTENT__ = content;
   window.dispatchEvent(new CustomEvent("northmerelegal:content-ready"));
   }
 
