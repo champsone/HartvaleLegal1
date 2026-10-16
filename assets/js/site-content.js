@@ -1,4 +1,4 @@
-/* HartvaleLegal | Shared homepage content
+/* Northmere Legal | Shared homepage content
    This file is the safe, dependency-free default for GitHub Pages. */
 (function () {
   "use strict";
@@ -6,12 +6,12 @@
   window.DEFAULT_SITE_CONTENT = {
     version: 1,
     meta: {
-      title: "HartvaleLegal | Independent legal advice in London, Oxford and Edinburgh",
-      description: "HartvaleLegal provides clear, considered legal advice to private clients, businesses and institutions across the UK.",
-      ogTitle: "HartvaleLegal | Independent legal advice",
+      title: "Northmere Legal | Independent legal advice in London, Oxford and Edinburgh",
+      description: "Northmere Legal provides clear, considered legal advice to private clients, businesses and institutions across the UK.",
+      ogTitle: "Northmere Legal | Independent legal advice",
       ogDescription: "Clear, considered legal advice for private clients, businesses and institutions."
     },
-    brand: { name: "HartvaleLegal", descriptor: "Solicitors", mark: "H" },
+    brand: { name: "Northmere Legal", descriptor: "Solicitors", mark: "H" },
     header: {
       strapline: "Clear, considered legal advice in London, Oxford and Edinburgh",
       phoneDisplay: "TODO: phone number",
@@ -20,7 +20,7 @@
     },
     hero: {
       title: "Clarity in complexity.",
-      lede: "HartvaleLegal advises private clients, businesses and institutions on decisions that deserve careful thought, sound judgement and a clear way forward.",
+      lede: "Northmere Legal advises private clients, businesses and institutions on decisions that deserve careful thought, sound judgement and a clear way forward.",
       primaryLabel: "Arrange a conversation",
       primaryUrl: "#contact",
       secondaryLabel: "View our work",
@@ -43,7 +43,7 @@
     clients: {
       title: "What clients say.",
       intro: "Clients come to us for clear judgement, close attention and advice they can act on.",
-      leadQuote: "HartvaleLegal took a complicated family and property position and turned it into a plan we could act on. Every conversation was direct, and we always knew who was responsible.",
+      leadQuote: "Northmere Legal took a complicated family and property position and turned it into a plan we could act on. Every conversation was direct, and we always knew who was responsible.",
       leadAttribution: "Private client",
       leadDetail: "Estate and succession planning, London",
       quotes: [
