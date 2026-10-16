@@ -82,6 +82,6 @@ Supabase *service_role* key here.
 - The hero photograph is designed to bleed to the right edge of the screen on desktop.
 
 
-## Rebrand and launch checks
+## Northmere Legal visual refresh
 
-The visual brand has been updated to **Northmere Legal**. The existing `CNAME` file is intentionally retained so this ZIP does not silently break the current custom-domain deployment. After registering and configuring the replacement domain, update `CNAME` to that exact domain. Check the chosen name and trademark availability before committing to the brand. Replace all illustrative people, testimonials, contact details, regulatory claims and other TODO placeholders with verified information before launch.
+This version applies a premium forest-green, warm-ivory and champagne-gold visual theme. Before public launch, verify all legal-service claims, attorney profiles, contact details, testimonials, and regulatory statements. Keep the existing `CNAME` until the replacement domain is registered and DNS is configured.
