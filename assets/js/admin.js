@@ -24,7 +24,7 @@
       if (result.error || !result.data || !result.data.data) return clone(defaults);
       var live = result.data.data;
       if (!live || typeof live !== "object" || Object.keys(live).length === 0) return clone(defaults);
-      return merge(clone(defaults), window.cleanLegacyBrand(live));
+      return window.normalizeBrand(merge(clone(defaults), window.cleanLegacyBrand(live)));
     } catch (error) { return clone(defaults); }
   }
   function getPath(object, path) { return path.split(".").reduce(function (value, part) { return value == null ? "" : value[part]; }, object); }
@@ -116,7 +116,7 @@
         field("Browser title", "meta.title", "textarea", "Shown in the browser tab and search results.", true),
         field("Meta description", "meta.description", "textarea", "Short search description.", true),
         field("Social title", "meta.ogTitle"), field("Social description", "meta.ogDescription", "textarea"),
-        field("Firm name", "brand.name"), field("Descriptor", "brand.descriptor"), field("Logo letter", "brand.mark"),
+        field("Firm name", "brand.name"), field("Descriptor", "brand.descriptor"), field("Logo letter", "brand.mark", "text", "Set automatically from the first letter of the firm name."),
         field("Work navigation label", "header.nav.work"),
         field("Clients navigation label", "header.nav.clients"), field("People navigation label", "header.nav.people"), field("Header button label", "header.nav.cta")
       ])) +
@@ -191,6 +191,7 @@
     if (!client) { saveStatus.textContent = "Supabase is not configured yet. Fill in assets/js/supabase-config.js first."; saveStatus.style.color = "var(--danger)"; return; }
     saveStatus.textContent = "Saving\u2026"; saveStatus.style.color = "var(--muted)";
     try {
+      window.normalizeBrand(state);
       var result = await client.from("site_content").upsert({ id: 1, data: state, updated_at: new Date().toISOString() }).select("id");
       if (result.error) throw result.error;
       if (!result.data || !result.data.length) throw new Error("no row was written - check you are signed in and that supabase/setup.sql has been run");

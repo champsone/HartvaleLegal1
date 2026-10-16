@@ -20,6 +20,30 @@
     return value;
   };
 
+  /* Brand integrity. Guarantees the logo letter, firm name, descriptor and copyright
+     line are consistent whatever is stored in the database:
+     - name falls back to NorthmereLegal and never repeats itself
+     - logo letter is always the first letter of the firm name (a stale "H" cannot survive)
+     - descriptor never just repeats the firm name
+     - copyright line never starts with the firm name again */
+  window.normalizeBrand = function (c) {
+    if (!c || typeof c !== "object") return c;
+    c.brand = c.brand || {};
+    var name = String(c.brand.name || "").replace(/\s+/g, " ").trim();
+    var rep = /^(.{3,}?)\s*\1$/i.exec(name);
+    if (rep) name = rep[1].trim();
+    if (!name) name = "NorthmereLegal";
+    c.brand.name = name;
+    c.brand.mark = name.charAt(0).toUpperCase();
+    var d = String(c.brand.descriptor || "").trim();
+    if (!d || /northmere/i.test(d) || d.toLowerCase() === name.toLowerCase()) d = "Solicitors";
+    c.brand.descriptor = d;
+    if (c.footer && typeof c.footer.copyright === "string") {
+      c.footer.copyright = c.footer.copyright.replace(/^\s*northmere\s*legal\b[.,:;\s-]*/i, "").trim();
+    }
+    return c;
+  };
+
   window.DEFAULT_SITE_CONTENT = {
     version: 1,
     meta: {
