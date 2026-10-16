@@ -24,7 +24,7 @@
       if (result.error || !result.data || !result.data.data) return clone(defaults);
       var live = result.data.data;
       if (!live || typeof live !== "object" || Object.keys(live).length === 0) return clone(defaults);
-      return merge(clone(defaults), live);
+      return merge(clone(defaults), window.cleanLegacyBrand(live));
     } catch (error) { return clone(defaults); }
   }
   function getPath(object, path) { return path.split(".").reduce(function (value, part) { return value == null ? "" : value[part]; }, object); }
@@ -191,8 +191,9 @@
     if (!client) { saveStatus.textContent = "Supabase is not configured yet. Fill in assets/js/supabase-config.js first."; saveStatus.style.color = "var(--danger)"; return; }
     saveStatus.textContent = "Saving\u2026"; saveStatus.style.color = "var(--muted)";
     try {
-      var result = await client.from("site_content").update({ data: state, updated_at: new Date().toISOString() }).eq("id", 1);
+      var result = await client.from("site_content").upsert({ id: 1, data: state, updated_at: new Date().toISOString() }).select("id");
       if (result.error) throw result.error;
+      if (!result.data || !result.data.length) throw new Error("no row was written - check you are signed in and that supabase/setup.sql has been run");
       saveStatus.textContent = "Saved. Live for every visitor now.";
       saveStatus.style.color = "var(--green)";
     } catch (error) {

@@ -3,6 +3,23 @@
 (function () {
   "use strict";
 
+  /* The firm was previously called "Hartvale". Content saved in Supabase before the
+     rename can still contain the old name, so every loader runs it through this. */
+  window.cleanLegacyBrand = function clean(value) {
+    if (typeof value === "string") {
+      return value.replace(/hartvale(\s*legal)?/gi, function (m) {
+        var full = /legal/i.test(m), lower = m === m.toLowerCase(), upper = m === m.toUpperCase();
+        var out = full ? "NorthmereLegal" : "Northmere";
+        return lower ? out.toLowerCase() : upper ? out.toUpperCase() : out;
+      });
+    }
+    if (Array.isArray(value)) return value.map(clean);
+    if (value && typeof value === "object") {
+      var o = {}; Object.keys(value).forEach(function (k) { o[k] = clean(value[k]); }); return o;
+    }
+    return value;
+  };
+
   window.DEFAULT_SITE_CONTENT = {
     version: 1,
     meta: {
@@ -13,7 +30,7 @@
     },
     brand: { name: "NorthmereLegal", descriptor: "Solicitors", mark: "N" },
     header: {
-      nav: { work: "Our work", workUrl: "#practice", clients: "Clients", clientsUrl: "#clients", people: "Our people", peopleUrl: "#people", cta: "Start a conversation", ctaUrl: "#contact" }
+      nav: { work: "Our work", workUrl: "#services", clients: "Clients", clientsUrl: "#clients", people: "Our people", peopleUrl: "#people", cta: "Start a conversation", ctaUrl: "#contact" }
     },
     hero: {
       eyebrow: "Trusted legal partners",
@@ -22,7 +39,7 @@
       primaryLabel: "Arrange a conversation",
       primaryUrl: "#contact",
       secondaryLabel: "View our work",
-      secondaryUrl: "#practice",
+      secondaryUrl: "#services",
       imageAlt: "Contemporary professional office interior",
       caption: "Advice for what comes next.",
       imageUrl: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=2000&q=88"
@@ -119,7 +136,7 @@
       legal: "This is a design concept. Verify all firm, regulatory and contact details before publication.",
       copyright: "Concept website. Names and sample comments are illustrative.",
       links: [
-        { label: "Our work", url: "#practice" },
+        { label: "Our work", url: "#services" },
         { label: "Clients", url: "#clients" },
         { label: "Our people", url: "#people" },
         { label: "Contact", url: "#contact" }
@@ -127,7 +144,7 @@
       legalLinks: [
         { label: "Privacy information", url: "#contact" },
         { label: "Complaints information", url: "#contact" },
-        { label: "Accessibility statement", url: "#main" }
+        { label: "Accessibility statement", url: "#top" }
       ]
     }
   };
