@@ -26,7 +26,7 @@
       var live = result.data.data;
       if (!live || typeof live !== "object" || Object.keys(live).length === 0) return clone(defaults);
       if ((Number(live.revision) || 0) < (Number(defaults.revision) || 0)) { staleLoaded = true; return window.normalizeBrand(clone(defaults)); }
-      return window.normalizeBrand(merge(clone(defaults), window.cleanLegacyBrand(live)));
+      return window.normalizeBrand(merge(clone(defaults), window.cleanLegacyBrand(window.migrateContent(live))));
     } catch (error) { return clone(defaults); }
   }
   function getPath(object, path) { return path.split(".").reduce(function (value, part) { return value == null ? "" : value[part]; }, object); }
@@ -54,6 +54,7 @@
     partner: { name: "New partner", role: "Partner", focus: "", based: "", bio: "", email: "", imageUrl: "", imageAlt: "" },
     insight: { category: "General", title: "New insight", description: "", linkLabel: "Talk to our team →", linkUrl: "#contact" },
     step: { title: "", text: "" },
+    stat: { value: "", label: "" },
     link: { label: "", url: "#" },
     text: ""
   };
@@ -89,10 +90,9 @@
     var stepCards = state.contact.steps.map(function (item, i) { return listCard("contact.steps", i, state.contact.steps.length, "Step " + (i + 1), [field("Title", "contact.steps." + i + ".title"), field("Text", "contact.steps." + i + ".text", "textarea")]); });
     var footerLinks = state.footer.links.map(function (item, i) { return listCard("footer.links", i, state.footer.links.length, "Footer link " + (i + 1), [field("Label", "footer.links." + i + ".label"), field("URL", "footer.links." + i + ".url", "url")]); });
     var legalLinks = state.footer.legalLinks.map(function (item, i) { return listCard("footer.legalLinks", i, state.footer.legalLinks.length, "Legal link " + (i + 1), [field("Label", "footer.legalLinks." + i + ".label"), field("URL", "footer.legalLinks." + i + ".url", "url", "Relative path or full URL.")]); });
+    var navCards = (state.header.links || []).map(function (item, i) { return listCard("header.links", i, state.header.links.length, "Link " + (i + 1), [field("Label", "header.links." + i + ".label"), field("URL", "header.links." + i + ".url", "url", "#section, a page path or a full https:// URL.")]); });
+    var statCards = (state.about.stats || []).map(function (item, i) { return listCard("about.stats", i, state.about.stats.length, "Proof point " + (i + 1), [field("Value", "about.stats." + i + ".value"), field("Label", "about.stats." + i + ".label")]); });
     var urls = [
-      ["Work navigation URL", "header.nav.workUrl", "Destination for the Our work navigation link."],
-      ["Clients navigation URL", "header.nav.clientsUrl", "Destination for the Clients navigation link."],
-      ["People navigation URL", "header.nav.peopleUrl", "Destination for the Our people navigation link."],
       ["Header button URL", "header.nav.ctaUrl", "Destination for the header call to action."],
       ["Hero primary button", "hero.primaryUrl", "Use #contact, a page path, or a full https:// URL."],
       ["Hero secondary button", "hero.secondaryUrl", "Destination for the secondary hero action."],
@@ -119,27 +119,25 @@
         field("Meta description", "meta.description", "textarea", "Short search description.", true),
         field("Social title", "meta.ogTitle"), field("Social description", "meta.ogDescription", "textarea"),
         field("Firm name", "brand.name"), field("Descriptor", "brand.descriptor"), field("Logo letter", "brand.mark", "text", "Set automatically from the first letter of the firm name."),
-        field("Work navigation label", "header.nav.work"),
-        field("Clients navigation label", "header.nav.clients"), field("People navigation label", "header.nav.people"), field("Header button label", "header.nav.cta")
-      ])) +
+        field("Header button label", "header.nav.cta"),
+        field("Skip-link text", "ui.skipLink", "text", "Hidden link for keyboard and screen-reader users."), field("Mobile menu button", "ui.menuOpen"), field("Mobile menu close button", "ui.menuClose")
+      ]) + "<h3>Navigation links</h3>" + repeatGrid(navCards) + addButton("header.links", "link", "Add navigation link")) +
       section("Hero", "The first screen visitors see. Button destinations and the image URL are in the URL key below.", grid([
         field("Eyebrow", "hero.eyebrow"), field("Headline", "hero.title", "textarea", "First line of the headline.", true), field("Headline accent", "hero.titleAccent", "text", "Second line, shown in gold italics. Optional.", true), field("Intro text", "hero.lede", "textarea", "The paragraph below the headline.", true),
         field("Primary button label", "hero.primaryLabel"), field("Secondary button label", "hero.secondaryLabel"),
         field("Image alt text", "hero.imageAlt", "textarea", "Describe the image for accessibility.", true), field("Image caption", "hero.caption")
       ])) +
       section("Trust strip", "Credibility statements shown below the hero. Add, remove and reorder as needed.", repeatGrid(trustCards) + addButton("trust", "trust", "Add trust item")) +
-      section("Practice areas", "Section heading, then each practice card with its own list and button.", grid([field("Section label", "practiceSection.eyebrow"), field("Section title", "practiceSection.title"), field("Section intro", "practiceSection.intro", "textarea", "", true)]) + repeatGrid(practiceCards) + addButton("practice", "practice", "Add practice area")) +
+      section("Practice areas", "Section heading, then each practice card with its own list and button.", grid([field("Section label", "practiceSection.eyebrow"), field("Section title", "practiceSection.title"), field("Section intro", "practiceSection.intro", "textarea", "", true), field("More link label", "practiceSection.linkLabel"), field("More link URL", "practiceSection.linkUrl", "url")]) + repeatGrid(practiceCards) + addButton("practice", "practice", "Add practice area")) +
       section("Client proof", "Introduction and approved testimonial copy.", grid([
-        field("Section title", "clients.title"), field("Section intro", "clients.intro", "textarea", "", true),
+        field("Section label", "clients.eyebrow"), field("Section title", "clients.title"), field("Section intro", "clients.intro", "textarea", "", true),
         field("Lead quote", "clients.leadQuote", "textarea", "Use approved wording only.", true), field("Lead attribution", "clients.leadAttribution"), field("Lead matter detail", "clients.leadDetail"), field("Disclosure note", "clients.finePrint", "textarea", "Keep any required legal disclosure.", true)
       ]) + repeatGrid(quoteCards) + addButton("clients.quotes", "quote", "Add quote")) +
       section("About section", "Edit the firm introduction, visual, proof points and call-to-action.", grid([
         field("Eyebrow", "about.eyebrow"), field("Heading", "about.title", "textarea", "Use a line break if needed.", true),
         field("Introduction", "about.body", "textarea", "Short, accurate firm introduction.", true), field("Button label", "about.buttonLabel"),
-        field("Proof point 1 value", "about.stats.0.value"), field("Proof point 1 label", "about.stats.0.label"),
-        field("Proof point 2 value", "about.stats.1.value"), field("Proof point 2 label", "about.stats.1.label"),
-        field("Proof point 3 value", "about.stats.2.value"), field("Proof point 3 label", "about.stats.2.label")
-      ])) +
+        field("Image alt text", "about.imageAlt", "text", "Describe the about image for accessibility.")
+      ]) + repeatGrid(statCards) + addButton("about.stats", "stat", "Add proof point")) +
       section("Insights section", "Edit the perspectives cards shown on the homepage.", grid([
         field("Eyebrow", "insights.eyebrow"), field("Heading", "insights.title", "textarea", "Section heading.", true),
         field("Introduction", "insights.intro", "textarea", "Short introduction.", true)
@@ -149,7 +147,7 @@
         field("Lead name", "people.lead.name"), field("Lead role", "people.lead.role"), field("Lead biography", "people.lead.bio", "textarea", "", true),
         field("Lead focus", "people.lead.focus"), field("Lead base", "people.lead.based"), field("Portrait alt text", "people.lead.imageAlt"),
         field("Lead button label", "people.lead.buttonLabel"), field("Lead quote", "people.lead.quote", "textarea", "", true), field("Quote attribution", "people.lead.quoteAttribution", "text", "", true),
-        field("Roster heading", "people.rosterTitle")
+        field("Roster heading", "people.rosterTitle"), field("Partner button prefix", "people.contactPrefix", "text", "Shown as Contact + first name on each partner card.")
       ]) + repeatGrid(partnerCards) + addButton("people.partners", "partner", "Add partner")) +
       section("Contact and enquiry", "Office details, reassurance text, the enquiry form and its messages.", grid([
         field("Eyebrow", "contact.eyebrow"), field("Form notice", "contact.formNotice", "textarea", "Shown beneath the form submit button.", true),
@@ -160,7 +158,11 @@
         field("Telephone label", "contact.labels.offices"), field("Other offices", "contact.otherOffices", "textarea"),
         field("Availability label", "contact.labels.hours"), field("Availability", "contact.availability", "textarea"),
         field("Form heading", "contact.formLabel"), field("Form email subject", "contact.formSubject"), field("Send button label", "contact.submitLabel"),
-        field("Dropdown placeholder", "contact.matterPlaceholder"), stringList("Dropdown option", "contact.matterOptions"),
+        field("Dropdown placeholder", "contact.matterPlaceholder"),
+        field("Name field label", "contact.fields.name"), field("Email field label", "contact.fields.email"), field("Phone field label", "contact.fields.phone"), field("Practice area field label", "contact.fields.matter"), field("Message field label", "contact.fields.message"),
+        field("Email placeholder", "contact.fields.emailPlaceholder"), field("Message placeholder", "contact.fields.messagePlaceholder", "textarea"),
+        field("Name error", "contact.errors.name"), field("Email error", "contact.errors.email"), field("Message error", "contact.errors.message"), field("Not-connected error", "contact.errors.notConnected", "textarea"),
+        stringList("Dropdown option", "contact.matterOptions"),
         field("Thank-you note", "contact.successMessage", "textarea", "Shown after the enquiry is accepted.", true), field("Error note", "contact.errorMessage", "textarea", "Shown if the submission fails.", true), field("Privacy link text", "contact.privacyLabel")
       ]) + repeatGrid(stepCards) + addButton("contact.steps", "step", "Add step")) +
       section("Footer", "Regulatory text, copyright and footer links.", grid([
@@ -263,7 +265,7 @@
   });
   document.getElementById("import-file").addEventListener("change", function (event) {
     var file = event.target.files[0]; if (!file) return;
-    var reader = new FileReader(); reader.onload = function () { try { var imported = JSON.parse(reader.result); if (imported.version !== defaults.version) throw new Error("version"); state = window.normalizeBrand(merge(clone(defaults), window.cleanLegacyBrand(imported))); state.revision = defaults.revision; render(); saveStatus.textContent = "Imported. Review the fields, then save changes to publish."; saveStatus.style.color = "var(--green)"; } catch (error) { saveStatus.textContent = "That file is not a compatible NorthmereLegal content export."; saveStatus.style.color = "var(--danger)"; } };
+    var reader = new FileReader(); reader.onload = function () { try { var imported = JSON.parse(reader.result); if (imported.version !== defaults.version) throw new Error("version"); state = window.normalizeBrand(merge(clone(defaults), window.cleanLegacyBrand(window.migrateContent(imported)))); state.revision = defaults.revision; render(); saveStatus.textContent = "Imported. Review the fields, then save changes to publish."; saveStatus.style.color = "var(--green)"; } catch (error) { saveStatus.textContent = "That file is not a compatible NorthmereLegal content export."; saveStatus.style.color = "var(--danger)"; } };
     reader.readAsText(file); event.target.value = "";
   });
 

@@ -44,6 +44,23 @@
     return c;
   };
 
+  /* Migration. Older saved content stored header navigation as fixed slots
+     (header.nav.work / people). The header is now a free list (header.links), so carry
+     any saved labels and destinations across instead of losing them. */
+  window.migrateContent = function (c) {
+    if (!c || typeof c !== "object") return c;
+    var h = c.header;
+    if (h && h.nav && !Array.isArray(h.links)) {
+      var links = window.DEFAULT_SITE_CONTENT.header.links.map(function (l) { return { label: l.label, url: l.url }; });
+      links.forEach(function (l) {
+        if (l.url === "#services" && h.nav.work) { l.label = h.nav.work; if (h.nav.workUrl) l.url = h.nav.workUrl; }
+        if (l.url === "#people" && h.nav.people) { l.label = h.nav.people; if (h.nav.peopleUrl) l.url = h.nav.peopleUrl; }
+      });
+      h.links = links;
+    }
+    return c;
+  };
+
   window.DEFAULT_SITE_CONTENT = {
     version: 1,
     revision: 2,
@@ -55,8 +72,17 @@
     },
     brand: { name: "NorthmereLegal", descriptor: "Solicitors", mark: "N" },
     header: {
-      nav: { work: "Services", workUrl: "#services", clients: "Clients", clientsUrl: "#clients", people: "Our Team", peopleUrl: "#people", cta: "Book a Consultation", ctaUrl: "#contact" }
+      links: [
+        { label: "Home", url: "#top" },
+        { label: "Services", url: "#services" },
+        { label: "About", url: "#about" },
+        { label: "Our Team", url: "#people" },
+        { label: "Insights", url: "#insights" },
+        { label: "Contact", url: "#contact" }
+      ],
+      nav: { cta: "Book a Consultation", ctaUrl: "#contact" }
     },
+    ui: { skipLink: "Skip to content", menuOpen: "☰ Menu", menuClose: "✕ Close" },
     hero: {
       eyebrow: "Independent. Partner-led.",
       title: "Legal advice that gives you",
@@ -98,16 +124,17 @@
     },
     people: {
       rosterTitle: "Our partners",
+      contactPrefix: "Contact",
       title: "Senior lawyers, from first call to final outcome",
       intro: "Every matter is led by a partner. You will always know who is advising you and how to reach them.",
       lead: {
         name: "Oliver Smith", role: "Senior partner", bio: "Oliver leads our private client and property work. He advises families, founders and institutions on matters where legal judgement, discretion and a practical view of the future all count.",
-        focus: "Private clients and property", based: "London and Oxford", email: "", imageUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=900&q=85", imageAlt: "Portrait of Oliver Smith, senior partner", buttonLabel: "Contact Oliver", quote: "Understand the issue fully, then give advice that can be acted on.", quoteAttribution: "Oliver Smith, Senior partner"
+        focus: "Private clients and property", based: "London and Oxford", email: "", imageUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&crop=faces&w=900&q=90", imageAlt: "Mature, natural professional portrait of Oliver Smith, senior partner", buttonLabel: "Contact Oliver", quote: "Understand the issue fully, then give advice that can be acted on.", quoteAttribution: "Oliver Smith, Senior partner"
       },
       partners: [
-        { name: "Priya Hart", role: "Partner", focus: "Business and disputes", based: "London", bio: "Priya guides businesses and their owners through shareholder disputes, commercial claims and contested transactions.", email: "", imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=700&q=85", imageAlt: "Portrait of Priya Hart, partner" },
-        { name: "Marcus Bell", role: "Partner", focus: "Property and development", based: "Oxford", bio: "Marcus advises investors, developers and landowners on acquisitions, planning-led projects and complex lettings.", email: "", imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=85", imageAlt: "Portrait of Marcus Bell, partner" },
-        { name: "Eleanor Shaw", role: "Partner", focus: "Private wealth and family", based: "Edinburgh", bio: "Eleanor helps families plan for succession, resolve inheritance questions and navigate separation with care.", email: "", imageUrl: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=700&q=85", imageAlt: "Portrait of Eleanor Shaw, partner" }
+        { name: "Priya Hart", role: "Partner", focus: "Business and disputes", based: "London", bio: "Priya guides businesses and their owners through shareholder disputes, commercial claims and contested transactions.", email: "", imageUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&crop=faces&w=700&q=90", imageAlt: "Mature, natural professional portrait of Priya Hart, partner" },
+        { name: "Marcus Bell", role: "Partner", focus: "Property and development", based: "Oxford", bio: "Marcus advises investors, developers and landowners on acquisitions, planning-led projects and complex lettings.", email: "", imageUrl: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&crop=faces&w=700&q=90", imageAlt: "Mature, natural professional portrait of Marcus Bell, partner" },
+        { name: "Eleanor Shaw", role: "Partner", focus: "Private wealth and family", based: "Edinburgh", bio: "Eleanor helps families plan for succession, resolve inheritance questions and navigate separation with care.", email: "", imageUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&crop=faces&w=700&q=90", imageAlt: "Mature, natural professional portrait of Eleanor Shaw, partner" }
       ]
     },
     about: {
@@ -117,6 +144,7 @@
       buttonLabel: "Meet our partners",
       buttonUrl: "#people",
       imageUrl: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=85",
+      imageAlt: "A bright, contemporary professional office",
       stats: [{ value: "1", label: "Named partner on every matter" }, { value: "3", label: "Offices: London, Oxford, Edinburgh" }, { value: "100%", label: "Focused on your outcome" }]
     },
     insights: {
@@ -142,6 +170,8 @@
       ],
       labels: { address: "Our offices", direct: "Email", offices: "Telephone", hours: "Opening hours" },
       formLabel: "Initial enquiry",
+      fields: { name: "Full name *", email: "Email address *", phone: "Phone number", matter: "Practice area", message: "How can we help? *", emailPlaceholder: "you@example.com", messagePlaceholder: "A brief, non-confidential summary of your enquiry" },
+      errors: { name: "Please enter your name.", email: "Please enter a valid email address.", message: "Please add a short summary of how we can help.", notConnected: "This form is not connected yet. Please use the contact details on this page." },
       submitLabel: "Send enquiry",
       matterPlaceholder: "Select a practice area",
       matterOptions: ["Private wealth and family", "Property and development", "Business and disputes", "General enquiry"],

@@ -73,11 +73,18 @@
   }
 
   function renderNav(c) {
-    var n = c.header.nav;
-    var items = [["Home", "#top"], [n.work, n.workUrl || "#services"], ["About", "#about"], [n.people, n.peopleUrl || "#people"], ["Insights", "#insights"], ["Contact", "#contact"], [n.cta, n.ctaUrl]];
-    $$("#navlinks > a").forEach(function (a, i) {
-      if (items[i]) { set(a, items[i][0]); setHref(a, items[i][1], "#top"); }
+    var host = $("#navlinks"); if (!host) return;
+    host.replaceChildren();
+    ((c.header && c.header.links) || []).filter(function (l) { return l && l.label; }).forEach(function (l) {
+      var a = add(host, "a", "", l.label); setHref(a, l.url, "#top");
     });
+    var n = (c.header && c.header.nav) || {};
+    if (n.cta) { var b = add(host, "a", "btn btn-outline", n.cta); setHref(b, n.ctaUrl, "#contact"); }
+    var first = $("a:not(.btn)", host); if (first) first.classList.add("active");
+    var ui = c.ui || {};
+    set($(".skip"), ui.skipLink || "Skip to content");
+    var tg = $(".menu-toggle");
+    if (tg && tg.getAttribute("aria-expanded") !== "true") set(tg, ui.menuOpen || "☰ Menu");
   }
 
   function renderHero(c) {
@@ -93,6 +100,8 @@
     var a = $$(".actions a", root);
     if (a[0]) { set(a[0], (h.primaryLabel || "Explore our services") + "  →"); setHref(a[0], h.primaryUrl, "#services"); }
     if (a[1]) { set(a[1], h.secondaryLabel || "Book a consultation"); setHref(a[1], h.secondaryUrl, "#contact"); }
+    set($(".hero-caption"), h.caption); show($(".hero-caption"), !!h.caption);
+    set($(".hero-image-alt"), h.imageAlt);
     var hero = $(".hero");
     if (hero && h.imageUrl) hero.style.setProperty("--hero-image", 'url("' + String(h.imageUrl).replace(/["\\()\s]/g, "") + '")');
   }
@@ -161,19 +170,23 @@
       set($(".eyebrow", copy), a.eyebrow);
       set($("h2", copy), a.title);
       set($(".about-body", copy), a.body);
-      var stats = $$(".stat", copy);
-      stats.forEach(function (el, i) {
-        var s = (a.stats || [])[i];
-        show(el, !!s);
-        if (s) { set($("strong", el), s.value); set($("span", el), s.label); }
-      });
+      var statsHost = $(".stats", copy);
+      if (statsHost) {
+        statsHost.replaceChildren();
+        (a.stats || []).filter(function (s) { return s && (s.value || s.label); }).forEach(function (s) {
+          var el = add(statsHost, "div", "stat"); add(el, "strong", "", s.value); add(el, "span", "", s.label);
+        });
+        show(statsHost, statsHost.children.length > 0);
+      }
       var btn = $(".btn", copy);
       set(btn, (a.buttonLabel || "Meet our partners") + "  →"); setHref(btn, a.buttonUrl, "#people");
     }
     var img = $(".about-image", sec);
     if (img && a.imageUrl) img.style.backgroundImage = 'linear-gradient(0deg,rgba(2,25,21,.4),rgba(2,25,21,0)),url("' + String(a.imageUrl).replace(/["\\()\s]/g, "") + '")';
+    if (img && a.imageAlt) img.setAttribute("aria-label", a.imageAlt);
   }
 
+  var contactPrefix = "Contact";
   function personCard(p, opts) {
     var card = make("article", opts.lead ? "team-lead" : "team-card");
     var fig = add(card, "div", "team-photo");
@@ -190,7 +203,7 @@
       add(body, "blockquote", "team-quote", p.quote);
       if (p.quoteAttribution) add(body, "p", "team-quote-by", p.quoteAttribution);
     }
-    var link = add(body, "a", opts.lead ? "btn btn-gold" : "card-link", (opts.lead ? (p.buttonLabel || "Contact") : "Contact " + String(p.name || "").split(" ")[0]) + "  →");
+    var link = add(body, "a", opts.lead ? "btn btn-gold" : "card-link", (opts.lead ? (p.buttonLabel || "Contact") : (contactPrefix || "Contact") + " " + String(p.name || "").split(" ")[0]) + "  →");
     setHref(link, p.email ? (p.email.indexOf("@") > 0 && !/^[a-z]+:/i.test(p.email) ? "mailto:" + p.email : p.email) : "#contact", "#contact");
     return card;
   }
@@ -198,6 +211,7 @@
   function renderPeople(c) {
     var sec = $("#people"); if (!sec) return;
     var p = c.people || {}, wrap = $(".wrap", sec); if (!wrap) return;
+    contactPrefix = p.contactPrefix || "Contact";
     wrap.replaceChildren();
     var head = add(wrap, "div", "team-heading");
     add(head, "p", "eyebrow", p.rosterTitle || "Our partners");
@@ -232,16 +246,32 @@
 
   function renderContact(c) {
     var sec = $("#contact"); if (!sec) return;
-    var ct = c.contact || {}, L = ct.labels || {};
+    var ct = c.contact || {}, L = ct.labels || {}, F = ct.fields || {};
     set($(".section-head .eyebrow", sec), ct.eyebrow || "Get in touch");
     set($(".section-head h2", sec), ct.title);
     set($(".section-head .section-intro", sec), ct.lede);
+    set($(".assurance-title", sec), ct.assuranceTitle); show($(".assurance-title", sec), !!ct.assuranceTitle);
     set($(".contact-intro", sec), ct.assuranceText);
-    var entries = [[L.address, ct.london, ct.otherOffices], [L.direct, ct.email], [L.offices, ct.phone], [L.hours, ct.availability]];
+    var steps = $(".contact-steps", sec);
+    if (steps) {
+      steps.replaceChildren();
+      (ct.steps || []).filter(function (s) { return s && (s.title || s.text); }).forEach(function (s) {
+        var li = add(steps, "li"); add(li, "strong", "", s.title); if (s.text) add(li, "span", "", s.text);
+      });
+      show(steps, steps.children.length > 0);
+    }
+    set($(".form-heading", sec), ct.formLabel); show($(".form-heading", sec), !!ct.formLabel);
+    var email = (ct.email || "").trim(), phone = (ct.phone || "").trim();
+    var emailHref = ct.emailHref || (email ? "mailto:" + email : "");
+    var phoneHref = ct.phoneHref || (phone ? "tel:" + phone.replace(/[^\d+]/g, "") : "");
+    var entries = [[L.address, [ct.london, ct.otherOffices].filter(Boolean).join(" · "), ""],
+                   [L.direct, email, emailHref], [L.offices, phone, phoneHref], [L.hours, ct.availability || "", ""]];
     $$(".info-item", sec).forEach(function (item, i) {
       var e = entries[i]; if (!e) return;
-      var value = [e[1], e[2]].filter(Boolean).join(" · ");
-      set($("strong", item), e[0]); set($("span", item), value); show(item, !!value);
+      set($("strong", item), e[0]);
+      var span = $("span", item); span.replaceChildren();
+      if (e[2] && e[1]) { var link = add(span, "a", "", e[1]); setHref(link, e[2], "#contact"); } else span.textContent = e[1];
+      show(item, !!e[1]);
     });
     var grid = $(".contact-grid", sec), aside = $(".contact-info", sec);
     var hasDetails = $$(".info-item", sec).some(function (el) { return !el.hidden; });
@@ -249,7 +279,11 @@
     if (grid) grid.classList.toggle("no-details", !hasDetails);
     var form = $("form", sec);
     if (form) {
-      var email = $("#email", form); if (email) email.placeholder = "you@example.com";
+      [["name", F.name], ["email", F.email], ["phone", F.phone], ["matter", F.matter], ["message", F.message]].forEach(function (x) {
+        var lab = $('label[for="' + x[0] + '"]', form); if (lab && x[1]) set(lab, x[1]);
+      });
+      var em = $("#email", form); if (em) em.placeholder = F.emailPlaceholder || "";
+      var msg = $("#message", form); if (msg) msg.placeholder = F.messagePlaceholder || "";
       var sel = $("#matter", form);
       if (sel) {
         sel.replaceChildren();
@@ -258,6 +292,12 @@
       }
       set($("#form-notice", form), ct.formNotice);
       set($("button[type=submit]", form), (ct.submitLabel || "Send enquiry") + "  →");
+      var priv = $(".form-privacy", form);
+      if (priv) {
+        priv.replaceChildren();
+        if (ct.privacyLabel) { var pa = add(priv, "a", "", ct.privacyLabel); setHref(pa, ct.privacyUrl, "#contact"); }
+        show(priv, !!ct.privacyLabel);
+      }
     }
   }
 
@@ -282,6 +322,9 @@
   function apply(c) {
     document.title = c.meta.title || c.brand.name;
     var md = $('meta[name="description"]'); if (md) md.content = c.meta.description || "";
+    [['meta[property="og:title"]', c.meta.ogTitle || c.meta.title], ['meta[name="twitter:title"]', c.meta.ogTitle || c.meta.title],
+     ['meta[property="og:description"]', c.meta.ogDescription || c.meta.description], ['meta[name="twitter:description"]', c.meta.ogDescription || c.meta.description]
+    ].forEach(function (m) { var el = $(m[0]); if (el) el.content = m[1] || ""; });
     renderBrand(c); renderNav(c); renderHero(c); renderTrust(c); renderServices(c); renderClients(c);
     renderAbout(c); renderPeople(c); renderInsights(c); renderContact(c); renderFooter(c);
     window.__NORTHMERE_CONTENT__ = c;
@@ -297,7 +340,7 @@
       if (r.error || !r.data || !r.data.data || !Object.keys(r.data.data).length) return null;
       /* Content saved before the current copy revision is stale: keep the new built-in copy. */
       if ((Number(r.data.data.revision) || 0) < (Number(defaults.revision) || 0)) return null;
-      return window.normalizeBrand(merge(clone(defaults), window.cleanLegacyBrand(r.data.data)));
+      return window.normalizeBrand(merge(clone(defaults), window.cleanLegacyBrand(window.migrateContent(r.data.data))));
     } catch (e) { return null; }
   }
   async function init() {
