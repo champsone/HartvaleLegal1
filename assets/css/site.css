@@ -245,3 +245,17 @@ button,input,select,textarea{font:inherit;color:inherit}
   .team-lead .team-photo img{aspect-ratio:4/3.3}
   .stats{grid-template-columns:1fr}
 }
+
+/* Editable-content additions */
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.hero-caption{position:absolute;right:clamp(16px,4vw,48px);bottom:18px;margin:0;max-width:60%;text-align:right;font-size:13px;letter-spacing:.04em;color:rgba(255,255,255,.82)}
+.assurance-title{margin:0 0 6px;font:600 20px/1.3 var(--serif);color:var(--green)}
+.contact-steps{list-style:none;margin:14px 0 22px;padding:0;display:grid;gap:12px;max-width:600px}
+.contact-steps li{border-left:2px solid var(--gold);padding-left:14px}
+.contact-steps strong{display:block;font-size:15px;color:var(--green)}
+.contact-steps span{display:block;font-size:14px;color:var(--muted);margin-top:2px}
+.form-heading{margin:0 0 14px;font:600 22px/1.3 var(--serif);color:var(--green)}
+.form-privacy{margin:8px 0 0;font-size:13px}
+.form-privacy a{color:var(--green);text-decoration:underline}
+.contact-info .info-item a{color:inherit;text-decoration:underline}
+@media (max-width:760px){.hero-caption{left:24px;right:24px;bottom:12px;max-width:none;text-align:left}}
