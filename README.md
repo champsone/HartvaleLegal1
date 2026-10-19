@@ -4,15 +4,15 @@ This is a static, mobile-responsive legal-services concept site. The public home
 
 ## What the admin can edit
 
-- Brand identity, browser/search metadata and navigation labels
-- Homepage hero text, calls to action and hero image URL
+- Brand identity, browser/search/social metadata, header navigation links (add, remove, reorder), the header button and the skip/menu labels
+- Homepage hero text, calls to action, hero image URL, alt text and caption
 - Trust/credibility strip items
 - Service cards (add, remove and reorder)
 - Client-proof/testimonial content (use only genuine, approved statements)
-- About section text, image URL, button and proof points
+- About section text, image URL and alt text, button, and proof points (add, remove, reorder)
 - Team heading, lead profile, team members, portraits, roles/focus, contact links and quote
 - Insights cards (add, remove and reorder)
-- Contact details, form labels, messages and destinations
+- Contact details (email and phone become links), reassurance heading, steps, form heading, every form label, placeholder, error and success message, privacy link, and destinations
 - Footer text and links
 
 Changes are saved to the `site_content` row in Supabase. The homepage reads that same row on each visit. If Supabase cannot be reached, the public page continues to show the built-in defaults.
