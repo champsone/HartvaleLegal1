@@ -101,8 +101,8 @@
       ["About button URL", "about.buttonUrl", "Destination for the about section button."],
       ["Lead contact URL or email", "people.lead.email", "Use an email address, an internal path, or a full https:// URL."],
       ["Lead partner image URL", "people.lead.imageUrl", "Portrait source used in the people section."],
-      ["Contact email URL", "contact.emailHref", "Optional. Leave blank to link the displayed email automatically."],
-      ["Contact phone URL", "contact.phoneHref", "Optional. Leave blank to link the displayed phone automatically."],
+      ["Company email link (optional)", "contact.emailHref", "Use mailto:address@example.com or leave blank to generate it from the company email address."],
+      ["Company telephone link (optional)", "contact.phoneHref", "Use tel:+441234567890 or leave blank to generate it from the company telephone number."],
       ["Formspree endpoint URL", "contact.formAction", "Paste the full URL from Formspree, for example https://formspree.io/f/abc12345."],
       ["Contact privacy link", "contact.privacyUrl", "Relative path or full URL."]
     ];
@@ -154,7 +154,7 @@
         field("Section title", "contact.title"), field("Intro", "contact.lede", "textarea", "", true),
         field("Reassurance heading", "contact.assuranceTitle"), field("Reassurance text", "contact.assuranceText", "textarea", "", true),
         field("Address label", "contact.labels.address"), field("London address", "contact.london", "textarea"),
-        field("Direct label", "contact.labels.direct"), field("Email", "contact.email", "email"), field("Phone", "contact.phone"),
+        field("Email label", "contact.labels.direct"), field("Company email address", "contact.email", "email", "Displayed in the homepage contact panel; visitors can tap to email."), field("Company telephone number", "contact.phone", "text", "Displayed in the homepage contact panel; visitors can tap to call."),
         field("Telephone label", "contact.labels.offices"), field("Other offices", "contact.otherOffices", "textarea"),
         field("Availability label", "contact.labels.hours"), field("Availability", "contact.availability", "textarea"),
         field("Form heading", "contact.formLabel"), field("Form email subject", "contact.formSubject"), field("Send button label", "contact.submitLabel"),

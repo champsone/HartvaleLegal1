@@ -63,7 +63,7 @@
 
   window.DEFAULT_SITE_CONTENT = {
     version: 1,
-    revision: 2,
+    revision: 3,
     meta: {
       title: "NorthmereLegal | Independent solicitors in London, Oxford and Edinburgh",
       description: "NorthmereLegal is an independent, partner-led law firm advising private clients, businesses and institutions on wealth, property and disputes across the UK.",
@@ -176,10 +176,10 @@
       matterPlaceholder: "Select a practice area",
       matterOptions: ["Private wealth and family", "Property and development", "Business and disputes", "General enquiry"],
       london: "",
-      email: "",
-      emailHref: "",
-      phone: "",
-      phoneHref: "",
+      email: "contact@NorthmereLegal.com",
+      emailHref: "mailto:contact@NorthmereLegal.com",
+      phone: "+447378107979",
+      phoneHref: "tel:+447378107979",
       otherOffices: "",
       availability: "",
       formSubject: "New enquiry via website",
