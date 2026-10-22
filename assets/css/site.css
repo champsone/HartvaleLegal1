@@ -259,3 +259,16 @@ button,input,select,textarea{font:inherit;color:inherit}
 .form-privacy a{color:var(--green);text-decoration:underline}
 .contact-info .info-item a{color:inherit;text-decoration:underline}
 @media (max-width:760px){.hero-caption{left:24px;right:24px;bottom:12px;max-width:none;text-align:left}}
+
+/* Enquiry form: validation, status and consent */
+.field.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.field.consent{margin-top:-4px}
+.check{display:flex;gap:12px;align-items:flex-start;font-weight:400!important;font-size:14px!important;line-height:1.55;color:var(--muted)!important;cursor:pointer}
+.check input{width:20px;height:20px;min-height:0;flex:none;margin:2px 0 0;accent-color:#8a6420}
+.field.has-error input:not([type=checkbox]),.field.has-error select,.field.has-error textarea{border-color:#a3392f;box-shadow:0 0 0 3px rgba(163,57,47,.12)}
+.field.has-error .check{color:#a3392f!important}
+.form-status{margin:16px 0 0;padding:14px 16px;font-size:15px;line-height:1.55;border-left:3px solid var(--gold);background:#f7f1e2;color:var(--ink)}
+.form-status[hidden]{display:none}
+.form-status.is-success{border-color:#2f7d5b;background:#eaf4ee;color:#143d2c}
+.form-status.is-error{border-color:#a3392f;background:#fbeeec;color:#6b211a}
+.btn[disabled]{opacity:.65;cursor:progress;transform:none}
