@@ -35,7 +35,7 @@ The SQL policies allow public reads for homepage rendering and authenticated wri
 
 - Replace all illustrative people, sample client comments, office details, email and phone with verified, approved information.
 - Confirm the correct legal entity, regulatory status, office addresses and any professional claims before publishing.
-- Configure a real secure enquiry endpoint before collecting enquiries. The current form prepares an email draft only when a verified recipient email is entered in the admin studio; it is not a secure case-management system.
+- The enquiry form posts to Formspree (`https://formspree.io/f/xeaeybpl`). Send a test enquiry after deploying and confirm it arrives, and confirm the Formspree notification email address. Formspree is not a case-management system, so keep the "no confidential documents" wording. After deploying, open `/admin/` and press **Save changes** once so the new content revision (4) replaces older saved copy.
 - Replace placeholder images and ensure you have rights to use all images.
 - Link privacy, complaints, accessibility and other legal pages to real documents.
 - Verify the live Supabase project and permissions in the target hosting environment; this archive cannot independently confirm remote database availability or deployment state.
