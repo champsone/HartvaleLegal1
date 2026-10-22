@@ -63,7 +63,7 @@
 
   window.DEFAULT_SITE_CONTENT = {
     version: 1,
-    revision: 3,
+    revision: 4,
     meta: {
       title: "NorthmereLegal | Independent solicitors in London, Oxford and Edinburgh",
       description: "NorthmereLegal is an independent, partner-led law firm advising private clients, businesses and institutions on wealth, property and disputes across the UK.",
@@ -163,7 +163,7 @@
       lede: "Tell us briefly what you are dealing with. We will review your enquiry and reply with a sensible next step.",
       assuranceTitle: "A considered first step",
       assuranceText: "Use the form to start a conversation with our team. Please do not include confidential documents or urgent deadlines in this first message.",
-      formNotice: "This form prepares an email to the firm. Connect a secure intake service before launch.",
+      formNotice: "Your details are sent securely and used only to respond to your enquiry. We aim to reply within one working day.",
       steps: [
         { title: "We listen first", text: "We understand the issue before we discuss options." },
         { title: "Clear next steps", text: "You know what we need from you and what happens next." }
@@ -183,8 +183,8 @@
       otherOffices: "",
       availability: "",
       formSubject: "New enquiry via website",
-      formAction: "",
-      successMessage: "Thank you. Your enquiry has been prepared. We will be in touch shortly.",
+      formAction: "https://formspree.io/f/xeaeybpl",
+      successMessage: "Thank you. Your enquiry has been received and a member of our team will be in touch shortly.",
       errorMessage: "We could not send your enquiry just now. Please try again later.",
       privacyLabel: "privacy information",
       privacyUrl: "#contact"

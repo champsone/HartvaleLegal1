@@ -37,40 +37,59 @@
     ["hero", "services", "clients", "about", "people", "insights", "contact"].forEach(function (id) { var el = document.getElementById(id); if (el) spy.observe(el); });
   }
 
-  /* Enquiry form */
+  /* Enquiry form (submits to Formspree) */
   var form = document.getElementById("contact-form");
   if (!form) return;
-  var notice = document.getElementById("form-notice");
+  var status = document.getElementById("form-status");
+  var btn = form.querySelector("button[type=submit]");
   var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   function content() { return (window.__NORTHMERE_CONTENT__ && window.__NORTHMERE_CONTENT__.contact) || {}; }
-  function say(msg) { notice.textContent = msg; }
+  function say(msg, kind) {
+    status.hidden = !msg;
+    status.textContent = msg || "";
+    status.className = "form-status" + (kind ? " is-" + kind : "");
+  }
+  function mark(el, bad) {
+    el.setAttribute("aria-invalid", bad ? "true" : "false");
+    var f = el.closest(".field"); if (f) f.classList.toggle("has-error", !!bad);
+  }
+  function fail(el, msg) { mark(el, true); say(msg, "error"); el.focus(); }
+  Array.prototype.forEach.call(form.elements, function (el) {
+    el.addEventListener("input", function () { if (el.getAttribute("aria-invalid") === "true") mark(el, false); });
+  });
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
-    var d = new FormData(form), c = content(), E = c.errors || {};
-    var name = String(d.get("name") || "").trim(), email = String(d.get("email") || "").trim(), message = String(d.get("message") || "").trim();
-    if (!name) { say(E.name || "Please enter your name."); form.elements.name.focus(); return; }
-    if (!EMAIL.test(email)) { say(E.email || "Please enter a valid email address."); form.elements.email.focus(); return; }
-    if (message.length < 10) { say(E.message || "Please add a short summary of how we can help."); form.elements.message.focus(); return; }
+    var c = content(), E = c.errors || {};
+    Array.prototype.forEach.call(form.elements, function (el) { if (el.name) mark(el, false); });
+    say("");
+    var el = form.elements;
+    var name = el.name.value.trim(), email = el.email.value.trim(), message = el.message.value.trim();
+    if (!name) return fail(el.name, E.name || "Please enter your name.");
+    if (!EMAIL.test(email)) return fail(el.email, E.email || "Please enter a valid email address.");
+    if (message.length < 10) return fail(el.message, E.message || "Please add a short summary of how we can help.");
+    if (el.consent && !el.consent.checked) return fail(el.consent, "Please confirm that we may use your details to respond to your enquiry.");
+    if (el._gotcha && el._gotcha.value) { form.reset(); say(c.successMessage || "Thank you. Your enquiry has been received.", "success"); return; }
 
     var action = String(c.formAction || "").trim();
-    var subject = c.formSubject || "New enquiry via website";
-    var btn = form.querySelector("button[type=submit]");
+    if (!/^https:\/\//i.test(action)) action = form.getAttribute("action");
+    var data = new FormData(form);
+    data.append("_subject", (c.formSubject || "New enquiry via website") + " - " + name);
+    var label = btn.textContent;
+    btn.disabled = true; btn.setAttribute("aria-busy", "true"); btn.textContent = "Sending…";
+    say("Sending your enquiry…", "info");
 
-    if (/^https:\/\//i.test(action)) {
-      btn.disabled = true;
-      d.append("_subject", subject);
-      fetch(action, { method: "POST", body: d, headers: { Accept: "application/json" } })
-        .then(function (r) { if (!r.ok) throw new Error("failed"); form.reset(); say(c.successMessage || "Thank you. Your enquiry has been sent."); })
-        .catch(function () { say(c.errorMessage || "We could not send your enquiry just now. Please try again later."); })
-        .then(function () { btn.disabled = false; });
-      return;
-    }
-
-    var recipient = String(c.email || "").trim();
-    if (!EMAIL.test(recipient)) { say(E.notConnected || "This form is not connected yet. Please use the contact details on this page."); return; }
-    var body = ["Name: " + name, "Email: " + email, "Phone: " + (String(d.get("phone") || "").trim() || "Not provided"), "Practice area: " + (d.get("matter") || "Not specified"), "", message].join("\n");
-    window.location.href = "mailto:" + recipient + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-    say(c.successMessage || "Your email application should open with the enquiry prepared.");
+    fetch(action, { method: "POST", body: data, headers: { Accept: "application/json" } })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw j; }); })
+      .then(function () {
+        form.reset();
+        say(c.successMessage || "Thank you. Your enquiry has been received and a member of our team will be in touch shortly.", "success");
+        status.setAttribute("tabindex", "-1"); status.focus();
+      })
+      .catch(function () {
+        var fb = String(c.email || "").trim();
+        say((c.errorMessage || "We could not send your enquiry just now. Please try again shortly") + (EMAIL.test(fb) ? ", or email us directly at " + fb + "." : "."), "error");
+      })
+      .then(function () { btn.disabled = false; btn.removeAttribute("aria-busy"); btn.textContent = label; });
   });
 })();

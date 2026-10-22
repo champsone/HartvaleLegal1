@@ -291,6 +291,7 @@
         (ct.matterOptions || []).forEach(function (m) { var o = add(sel, "option", "", m); o.value = m; });
       }
       set($("#form-notice", form), ct.formNotice);
+      if (/^https:\/\//i.test(String(ct.formAction || ""))) form.setAttribute("action", ct.formAction);
       set($("button[type=submit]", form), (ct.submitLabel || "Send enquiry") + "  →");
       var priv = $(".form-privacy", form);
       if (priv) {
